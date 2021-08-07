@@ -24,12 +24,6 @@ class DatabaseService {
 
   //to add verified displayName with uid
   Future<void> addDisplayName(UserNameReference userNameReference) async {
-    // await usersCollection
-    //     .doc(uid)
-    //     .set({'displayName': displayName}, SetOptions(merge: true))
-    //     .onError((error, stackTrace) => print(error.toString()))
-    //     .whenComplete(() => print('displayName addition complete'));
-    // await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
     await usersCollection
         .doc(uid)
         .set(userNameReference.toMap(), SetOptions(merge: true));

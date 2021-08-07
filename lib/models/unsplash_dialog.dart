@@ -56,13 +56,6 @@ class _UnsplashDialogState extends State<UnsplashDialog> {
                 children: [
                   IconButton(
                     onPressed: () async {
-                      // await _auth.currentUser!
-                      //     .updatePhotoURL(jsonResponse['urls']['small'])
-                      //     .onError(
-                      //         (error, stackTrace) => print(error.toString()))
-                      //     .whenComplete(
-                      //         () => print('Attempted to change photoURL'));
-                      // Navigator.pop(context);
                       await database.addPhotoURL(
                           UserPhotoReference(jsonResponse['urls']['small']));
                     },
