@@ -29,13 +29,6 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 10,
               ),
-
-              // ElevatedButton(
-              //     onPressed: () => Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => Profile())),
-              //     child: Text('Profile'))
             ],
           ),
           Positioned(
