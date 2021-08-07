@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "986524134363",
+    "project_id": "nurture-58e56",
+    "storage_bucket": "nurture-58e56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986524134363:android:baec56a3c73a609ece55fe",
+        "android_client_info": {
+          "package_name": "com.baboochka.nurture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986524134363-iecdr8mjl7krei8icuq17nlc0pmeisif.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwdSH_UjMSd1JZEYr64ibULGTUJ8K9QNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986524134363-iecdr8mjl7krei8icuq17nlc0pmeisif.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
