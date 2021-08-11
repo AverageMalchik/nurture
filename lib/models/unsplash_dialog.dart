@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nurture/models/user.dart';
@@ -14,7 +13,6 @@ class UnsplashDialog extends StatefulWidget {
 
 class _UnsplashDialogState extends State<UnsplashDialog> {
   var _response;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   // to get random image from unsplash, each time
   Future getRandomImage() async {
     try {

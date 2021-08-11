@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
 
 class DatabaseService {
@@ -7,6 +8,8 @@ class DatabaseService {
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
+  final CollectionReference plantsCollection =
+      FirebaseFirestore.instance.collection('plants');
   //to check if displayName already exists
   Future checkDisplayName(String check) async {
     bool? _checker;
@@ -48,5 +51,20 @@ class DatabaseService {
     final snapshots = usersCollection.doc(uid).snapshots();
     return snapshots.map((snapshot) =>
         UserPhotoReference.fromMap(snapshot.data() as Map<String, dynamic>));
+  }
+
+  //read plants database
+  Stream<List<PlantReference>> plantReferenceStream() {
+    final snapshots = plantsCollection.snapshots();
+    return snapshots.map((snapshot) => convertSnapshot(snapshot));
+  }
+
+  //converting snapshot into list v.v.imp
+  List<PlantReference> convertSnapshot(QuerySnapshot querySnapshot) {
+    return querySnapshot.docs.map((doc) {
+      final map = doc.data() as Map<String, dynamic>;
+      map['id'] = doc.id;
+      return PlantReference.fromMap(map);
+    }).toList();
   }
 }

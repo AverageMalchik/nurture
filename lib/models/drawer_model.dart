@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/screens/home.dart';
 import 'package:nurture/screens/profile.dart';
+import 'package:nurture/screens/settings.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
@@ -15,8 +16,8 @@ class _DrawerModelState extends State<DrawerModel> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DrawerHeader(
             margin: EdgeInsets.all(0),
@@ -35,17 +36,37 @@ class _DrawerModelState extends State<DrawerModel> {
               ],
             ),
           ),
-          TextButton(onPressed: () {}, child: Text('My Plants')),
-          TextButton(
-              onPressed: () => Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => Home())),
-              child: Text('Home')),
-          TextButton(
-              onPressed: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => Profile())),
-              child: Text('Profile')),
-          TextButton(onPressed: () {}, child: Text('Favourites')),
-          TextButton(onPressed: () {}, child: Text('Settings')),
+          TextButton.icon(
+            onPressed: () {},
+            label: Text('My Plants'),
+            icon: Icon(Icons.access_alarm_rounded),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => Home())),
+            label: Text('Home'),
+            icon: Icon(Icons.home_max_rounded),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => Profile())),
+            label: Text('Profile'),
+            icon: Icon(Icons.person),
+          ),
+          TextButton.icon(
+            onPressed: () {},
+            label: Text('Favourites'),
+            icon: Icon(
+              Icons.favorite_rounded,
+              color: Colors.red,
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => Settings())),
+            label: Text('Settings'),
+            icon: Icon(Icons.settings_suggest_rounded),
+          ),
           TextButton(
               onPressed: () async {
                 await AuthenticationService().signOut();
