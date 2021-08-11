@@ -24,3 +24,12 @@ class UserPhotoReference {
     return {'photoURL': photoURL};
   }
 }
+
+class UserCartService {
+  final String id;
+  final int amount;
+  UserCartService({required this.id, required this.amount});
+  Map<String, dynamic> toMap() {
+    return {'$id': amount};
+  }
+}
