@@ -21,8 +21,8 @@ class WrapperBuilder extends StatelessWidget {
               providers: [
                 Provider<User>.value(value: user),
                 Provider<DatabaseService>(
-                create: (_) => DatabaseService(uid: user.uid),
-              ),
+                  create: (_) => DatabaseService(uid: user.uid),
+                ),
               ],
               child: builder(context, snapshot),
             );
