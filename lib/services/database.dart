@@ -4,7 +4,7 @@ import 'package:nurture/models/user.dart';
 
 class DatabaseService {
   final String? uid;
-  DatabaseService({required this.uid});
+  DatabaseService({this.uid});
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
@@ -56,15 +56,76 @@ class DatabaseService {
   //read plants database
   Stream<List<PlantReference>> plantReferenceStream() {
     final snapshots = plantsCollection.snapshots();
-    return snapshots.map((snapshot) => convertSnapshot(snapshot));
+    return snapshots.map((snapshot) => convertPlantList(snapshot));
   }
 
-  //converting snapshot into list v.v.imp
-  List<PlantReference> convertSnapshot(QuerySnapshot querySnapshot) {
+  //converting available plants query snapshot into list
+  List<PlantReference> convertPlantList(QuerySnapshot querySnapshot) {
     return querySnapshot.docs.map((doc) {
       final map = doc.data() as Map<String, dynamic>;
       map['id'] = doc.id;
       return PlantReference.fromMap(map);
     }).toList();
+  }
+
+  //converting available plants query snapshot into list without Stream
+
+  //add to user's cart
+  Future<void> addCart(UserCartAction userCartAction) async {
+    await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('cart')
+        .set(userCartAction.toMap(), SetOptions(merge: true));
+  }
+
+  //remove from cart
+  Future<void> removeCart(UserCartAction userCartAction) async {
+    await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('cart')
+        .update({'${userCartAction.delete()}': FieldValue.delete()});
+  }
+
+  //get snapshot of user's cart
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getCount() {
+    final snapshot =
+        usersCollection.doc(uid).collection('actions').doc('cart').snapshots();
+    return snapshot;
+  }
+
+  Future<Map<String, dynamic>?> cartList() async {
+    final snapshot =
+        await usersCollection.doc(uid).collection('actions').doc('cart').get();
+    return snapshot.data();
+  }
+
+  //add to favourites
+  Future<void> addFavorites(UserFavoriteAction userFavoriteAction) async {
+    await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('favorites')
+        .set(userFavoriteAction.toMap(), SetOptions(merge: true));
+  }
+
+  //remove from favorites
+  Future<void> removeFavorites(UserFavoriteAction userFavoriteAction) async {
+    await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('favorites')
+        .update({'${userFavoriteAction.delete()}': FieldValue.delete()});
+  }
+
+  //read favorites
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getFavorites() {
+    final snapshot = usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('favorites')
+        .snapshots();
+    return snapshot;
   }
 }

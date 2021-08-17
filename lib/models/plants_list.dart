@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nurture/UI/ui.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/plant_tile.dart';
+import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 
 class ListPlants extends StatefulWidget {
@@ -19,7 +22,9 @@ class _ListPlantsState extends State<ListPlants> {
       ),
       itemCount: plants.length,
       itemBuilder: (context, index) {
-        return PlantTile(plant: plants[index]); //use filter logic
+        return PlantTile(
+          plant: plants[index],
+        );
       },
       shrinkWrap: true,
     );
