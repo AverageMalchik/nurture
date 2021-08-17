@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/screens/favorites.dart';
 import 'package:nurture/screens/home.dart';
 import 'package:nurture/screens/profile.dart';
-import 'package:nurture/screens/settings.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _DrawerModelState extends State<DrawerModel> {
             onPressed: () => Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => Home())),
             label: Text('Home'),
-            icon: Icon(Icons.home_max_rounded),
+            icon: Icon(Icons.home_rounded),
           ),
           TextButton.icon(
             onPressed: () => Navigator.push(
@@ -54,18 +54,13 @@ class _DrawerModelState extends State<DrawerModel> {
             icon: Icon(Icons.person),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => Favorites())),
             label: Text('Favourites'),
             icon: Icon(
               Icons.favorite_rounded,
               color: Colors.red,
             ),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => Settings())),
-            label: Text('Settings'),
-            icon: Icon(Icons.settings_suggest_rounded),
           ),
           TextButton(
               onPressed: () async {

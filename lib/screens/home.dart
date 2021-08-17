@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nurture/UI/ui.dart';
 import 'package:nurture/models/drawer_model.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/plants_list.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
-import 'package:nurture/models/plant_tile.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -37,12 +37,7 @@ class _HomeState extends State<Home> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.black,
-                  ))
+              CartIcon(),
             ],
           ),
           key: _scaffold,
