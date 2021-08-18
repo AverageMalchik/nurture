@@ -13,15 +13,14 @@ import 'cart_tile.dart';
 
 class ListCart extends StatefulWidget {
   final List<PlantReference> plants;
-  final Map<String, dynamic> cartMap;
-  ListCart({required this.plants, required this.cartMap});
+
+  ListCart({required this.plants});
   @override
   _ListCartState createState() => _ListCartState();
 }
 
 class _ListCartState extends State<ListCart>
     with SingleTickerProviderStateMixin {
-  int sum = 0;
   final _state = GlobalKey<AnimatedListState>();
 
   CurveTween _curve = CurveTween(curve: Curves.elasticOut);
@@ -34,19 +33,25 @@ class _ListCartState extends State<ListCart>
   late List<String> listKeys;
   List<CartTile> listCartTile = [];
 
+  late AnimationController _opacityController;
+  late Animation<double> _opacity;
+
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       addtoList();
     });
-    map = widget.cartMap;
-    listValues = map.values.toList();
-    for (int value in listValues) {
-      sum += value;
-    }
-    listKeys = map.keys.toList();
-
+    _opacityController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _opacityController, curve: Curves.easeIn));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _opacityController.dispose();
+    super.dispose();
   }
 
   void addtoList() {
@@ -91,43 +96,45 @@ class _ListCartState extends State<ListCart>
 
   @override
   Widget build(BuildContext context) {
-    if (map.isEmpty || listKeys.length == 0 || sum == 0) {
-      return Center(
-        child: Text('Cart is empty.'),
-      );
-    } else {
-      return Column(
-        children: [
-          Container(
-            height: listKeys.length * 115,
-            constraints: BoxConstraints(
-              maxHeight: 4 * 115,
-            ),
-            child: AnimatedList(
-              physics: BouncingScrollPhysics(),
+    final database = Provider.of<DatabaseService>(context, listen: false);
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: database.getCount(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          if (snapshot.data!.exists && snapshot.hasData) {
+            map = snapshot.data!.data()!;
+            listValues = map.values.toList();
+            listKeys = map.keys.toList();
+          } else {
+            map = {};
+          }
+          if (map.length == 0) {
+            _opacityController.forward();
+            return FadeTransition(
+              opacity: _opacity,
+              child: Center(
+                child: Text('Cart is empty.'),
+              ),
+            );
+          } else {
+            return AnimatedList(
               key: _state,
               itemBuilder: (context, index, animation) {
-                print('start AnimatedList');
                 return SlideTransition(
-                    position: animation
-                        .drive(_curve)
-                        .drive(index.isOdd ? _offsetR : _offsetL),
-                    child: listCartTile[index]);
+                  position: animation
+                      .drive(_curve)
+                      .drive(index.isOdd ? _offsetR : _offsetL),
+                  child: listCartTile[index],
+                );
               },
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Divider(
-              thickness: 1,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      );
-    }
+            );
+          }
+        }
+      },
+    );
   }
 }

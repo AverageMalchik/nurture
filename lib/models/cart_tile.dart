@@ -50,14 +50,10 @@ class _CartTileState extends State<CartTile>
   late AnimationController _controller;
   late Animation<Offset> _reveal;
 
-  Tween<Offset> _offsetR = Tween<Offset>(end: Offset.zero, begin: Offset(2, 0));
-  Tween<Offset> _offsetL =
-      Tween<Offset>(begin: Offset.zero, end: Offset(-5, 0));
   CurveTween _curve = CurveTween(curve: Curves.elasticOut);
 
   @override
   void initState() {
-    print('cart_tile initState');
     _controller = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 500),
@@ -75,7 +71,6 @@ class _CartTileState extends State<CartTile>
 
   @override
   Widget build(BuildContext context) {
-    print('entered cart_tile build');
     if (widget.animation == null) {
       return basic(context);
     } else {
