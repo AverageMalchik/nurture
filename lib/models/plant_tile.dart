@@ -155,7 +155,7 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                   children: [
                     Text(widget.plant.name),
                     _inStock
-                        ? Text(widget.plant.pricing.toString())
+                        ? Text('\$' + widget.plant.pricing.toString())
                         : Text('Unavailable'),
                     SizedBox(
                       height: 10,

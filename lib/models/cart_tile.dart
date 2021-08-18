@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
@@ -6,13 +8,18 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CartTile extends StatefulWidget {
+  final Key? key;
   final PlantReference plant;
   final int count;
+  final Function(String) onRemove;
+  final Animation<double>? animation;
 
-  CartTile({
-    required this.plant,
-    required this.count,
-  });
+  CartTile(
+      {this.key,
+      this.animation,
+      required this.plant,
+      required this.count,
+      required this.onRemove});
 
   @override
   _CartTileState createState() => _CartTileState();
@@ -26,7 +33,15 @@ class _CartTileState extends State<CartTile>
       if (loadingProgress == null)
         return child;
       else {
-        return SizedBox();
+        return Shimmer.fromColors(
+            child: Container(
+              width: 92,
+              height: 92,
+              decoration: BoxDecoration(
+                  color: Colors.black, borderRadius: BorderRadius.circular(15)),
+            ),
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade200);
       }
     },
     fit: BoxFit.fill,
@@ -35,16 +50,18 @@ class _CartTileState extends State<CartTile>
   late AnimationController _controller;
   late Animation<Offset> _reveal;
 
-  // Tween<Offset> _offsetR = Tween<Offset>(begin: Offset.zero, end: Offset(5, 0));
-  // Tween<Offset> _offsetL =
-  //     Tween<Offset>(begin: Offset.zero, end: Offset(-5, 0));
-  // CurveTween _curve = CurveTween(curve: Curves.easeIn);
+  Tween<Offset> _offsetR = Tween<Offset>(end: Offset.zero, begin: Offset(2, 0));
+  Tween<Offset> _offsetL =
+      Tween<Offset>(begin: Offset.zero, end: Offset(-5, 0));
+  CurveTween _curve = CurveTween(curve: Curves.elasticOut);
 
   @override
   void initState() {
     print('cart_tile initState');
-    _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _controller = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 500),
+        reverseDuration: Duration(milliseconds: 500));
     _reveal = Tween<Offset>(begin: Offset.zero, end: Offset(0.76, 0))
         .animate(CurvedAnimation(parent: _controller, curve: Curves.ease));
     super.initState();
@@ -59,19 +76,33 @@ class _CartTileState extends State<CartTile>
   @override
   Widget build(BuildContext context) {
     print('entered cart_tile build');
-    final database = Provider.of<DatabaseService>(context, listen: true);
+    if (widget.animation == null) {
+      return basic(context);
+    } else {
+      // _controller.duration = Duration(microseconds: 1);
+      // _controller.forward().then((_) => _controller.reverse());
+      return SizeTransition(
+        sizeFactor: widget.animation!.drive(_curve),
+        child: basicClose(context),
+      );
+    }
+  }
+
+  Widget basic(BuildContext context) {
+    final database = Provider.of<DatabaseService>(context, listen: false);
     return Stack(
       children: [
         Container(
+          alignment: Alignment.center,
           height: 112,
           width: 400,
           // margin: EdgeInsets.symmetric(vertical: 5),
-          padding: EdgeInsets.all(10),
+          // padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: Colors.transparent),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 91,
@@ -100,7 +131,7 @@ class _CartTileState extends State<CartTile>
                     height: 5,
                   ),
                   Text(
-                    (widget.plant.pricing * widget.count).toString(),
+                    '\$' + (widget.plant.pricing * widget.count).toString(),
                     style: TextStyle(fontSize: 20),
                   )
                 ],
@@ -135,7 +166,7 @@ class _CartTileState extends State<CartTile>
           ),
         ),
         Positioned(
-          top: 15,
+          top: 10,
           left: 10,
           child: Stack(
             alignment: Alignment.center,
@@ -144,6 +175,8 @@ class _CartTileState extends State<CartTile>
                 borderRadius: BorderRadius.circular(15),
                 child: GestureDetector(
                   onTap: () async {
+                    _controller.reverse();
+                    await widget.onRemove(widget.plant.id);
                     await database
                         .removeCart(UserCartAction(id: widget.plant.id));
                   },
@@ -216,20 +249,20 @@ class _CartTileState extends State<CartTile>
     );
   }
 
-  /*Widget basic(BuildContext context) {
-    final database = Provider.of<DatabaseService>(context, listen: false);
+  Widget basicClose(BuildContext context) {
     return Stack(
       children: [
         Container(
+          alignment: Alignment.center,
           height: 112,
           width: 400,
           // margin: EdgeInsets.symmetric(vertical: 5),
-          padding: EdgeInsets.all(10),
+          // padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: Colors.transparent),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 91,
@@ -258,7 +291,7 @@ class _CartTileState extends State<CartTile>
                     height: 5,
                   ),
                   Text(
-                    (widget.plant.pricing * widget.count).toString(),
+                    '\$' + (widget.plant.pricing * widget.count).toString(),
                     style: TextStyle(fontSize: 20),
                   )
                 ],
@@ -293,94 +326,50 @@ class _CartTileState extends State<CartTile>
           ),
         ),
         Positioned(
-          top: 15,
+          top: 10,
           left: 10,
-          child: _loading
-              ? Shimmer.fromColors(
-                  child: Container(
-                    height: 92,
-                    width: 92,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(15)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Container(
+              alignment: Alignment.center,
+              color: Colors.red[600],
+              width: 92,
+              height: 91,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 50,
                   ),
-                  baseColor: Colors.grey.shade300,
-                  highlightColor: Colors.grey.shade200)
-              : Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: GestureDetector(
-                        onTap: () async {
-                          await database
-                              .removeCart(UserCartAction(id: widget.plant.id));
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          color: Colors.red[600],
-                          width: 92,
-                          height: 91,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.close_rounded,
-                                color: Colors.white,
-                                size: 50,
-                              ),
-                              SizedBox(
-                                width: 2,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SlideTransition(
-                      position: _reveal,
-                      child: Container(
-                        height: 92,
-                        width: 92,
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              offset: Offset(3, 3),
-                              blurRadius: 4,
-                              color: Colors.grey.shade300)
-                        ], borderRadius: BorderRadius.circular(15)),
-                        child: ClipRRect(
-                          child: GestureDetector(
-                              onHorizontalDragEnd: (details) {
-                                if (!details.primaryVelocity!.isNegative)
-                                  _controller.forward();
-                              },
-                              child: _leading),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  SizedBox(
+                    width: 2,
+                  )
+                ],
+              ),
+            ),
+          ),
         ),
         Positioned(
-          top: 15,
-          left: 10 + 80,
-          child: GestureDetector(
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity!.isNegative) _controller.reverse();
-            },
-            onTap: () {
-              _controller.reverse();
-            },
-            child: Container(
-              height: 92,
-              width: 92,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.transparent),
+          top: 10,
+          left: 10 + 70,
+          child: Container(
+            height: 92,
+            width: 92,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  offset: Offset(3, 3),
+                  blurRadius: 4,
+                  color: Colors.grey.shade300)
+            ], borderRadius: BorderRadius.circular(15)),
+            child: ClipRRect(
+              child: _leading,
+              borderRadius: BorderRadius.circular(15),
             ),
           ),
         )
       ],
     );
-  }*/
+  }
 }

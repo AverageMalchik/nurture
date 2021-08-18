@@ -78,16 +78,6 @@ class _CartState extends State<Cart> {
                 },
               ),
             ),
-            SizedBox(
-              height: 5,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(
-                color: Colors.white,
-                thickness: 1,
-              ),
-            )
           ],
         ),
       ),

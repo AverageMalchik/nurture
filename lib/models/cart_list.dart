@@ -50,12 +50,14 @@ class _ListCartState extends State<ListCart>
   }
 
   void addtoList() {
-    // Future f = Future(() {}); //use for stagger effect
+    // Future f = Future(() {}); //use for staggered effect
     Timer(Duration(milliseconds: 200), () {
       listKeys.forEach((plant) {
         for (int i = 0; i < widget.plants.length; i++) {
           if (widget.plants[i].id == plant) {
             listCartTile.add(CartTile(
+                key: ValueKey(widget.plants[i].cover),
+                onRemove: _removeTile,
                 plant: widget.plants[i],
                 count: listValues.elementAt(listKeys.indexOf(plant))));
             _state.currentState!.insertItem(listCartTile.length - 1);
@@ -66,21 +68,26 @@ class _ListCartState extends State<ListCart>
     });
   }
 
-  // void _removeTile(String id) {
-  //   for (int i = 0; i < listCartTile.length; i++) {
-  //     if (listCartTile[i].plant.id == id) {
-  //       CartTile temp = listCartTile[i];
-  //       listCartTile.removeAt(i);
-  //       _state.currentState!.removeItem(i, (context, animation) {
-  //         return CartTile(
-  //           plant: temp.plant,
-  //           count: temp.count,
-  //         );
-  //       }, duration: Duration(milliseconds: 200));
-  //       break;
-  //     }
-  //   }
-  // }
+  void _removeTile(String id) {
+    for (int i = 0; i < listCartTile.length; i++) {
+      if (listCartTile[i].plant.id == id) {
+        CartTile temp = listCartTile[i];
+        listCartTile.removeAt(i);
+
+        _state.currentState!.removeItem(i, (context, animation) {
+          return CartTile(
+            key: ValueKey(temp.plant.cover),
+            animation: animation,
+            onRemove: _removeTile,
+            plant: temp.plant,
+            count: temp.count,
+          );
+        }, duration: Duration(milliseconds: 1000));
+
+        break;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,24 +96,37 @@ class _ListCartState extends State<ListCart>
         child: Text('Cart is empty.'),
       );
     } else {
-      return Container(
-        height: listKeys.length * 115,
-        constraints: BoxConstraints(
-          maxHeight: 4 * 115,
-        ),
-        child: AnimatedList(
-          physics: BouncingScrollPhysics(),
-          key: _state,
-          itemBuilder: (context, index, animation) {
-            print('index: $index');
-            print(listCartTile[index].plant.id);
-            return SlideTransition(
-                position: animation
-                    .drive(_curve)
-                    .drive(index.isOdd ? _offsetR : _offsetL),
-                child: listCartTile[index]);
-          },
-        ),
+      return Column(
+        children: [
+          Container(
+            height: listKeys.length * 115,
+            constraints: BoxConstraints(
+              maxHeight: 4 * 115,
+            ),
+            child: AnimatedList(
+              physics: BouncingScrollPhysics(),
+              key: _state,
+              itemBuilder: (context, index, animation) {
+                print('start AnimatedList');
+                return SlideTransition(
+                    position: animation
+                        .drive(_curve)
+                        .drive(index.isOdd ? _offsetR : _offsetL),
+                    child: listCartTile[index]);
+              },
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Divider(
+              thickness: 1,
+              color: Colors.white,
+            ),
+          ),
+        ],
       );
     }
   }
