@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/screens/cart.dart';
 
 class DatabaseService {
   final String? uid;

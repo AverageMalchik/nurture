@@ -49,3 +49,9 @@ class PlantReference {
         id: id);
   }
 }
+
+class PlantLite {
+  final PlantReference plant;
+  final int count;
+  PlantLite({required this.plant, required this.count});
+}

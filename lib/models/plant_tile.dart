@@ -249,7 +249,6 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                                       ? (_count == 2
                                           ? null
                                           : () async {
-                                              print('Button Clicked');
                                               _controller.forward();
                                               _plus.forward();
                                               ++_count;
@@ -257,7 +256,6 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                                                   UserCartAction(
                                                       id: widget.plant.id,
                                                       amount: _count));
-                                              print('Button Click Over');
                                             })
                                       : () {},
                                   child: AnimatedBuilder(

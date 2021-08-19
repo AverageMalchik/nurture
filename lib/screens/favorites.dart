@@ -53,13 +53,7 @@ class _FavoritesState extends State<Favorites>
                   maxHeight: 700,
                   maxWidth: 400,
                 ),
-                child: StreamProvider<List<PlantReference>>.value(
-                  value: database.plantReferenceStream(),
-                  initialData: <PlantReference>[],
-                  builder: (context, _) {
-                    return ListFavorites();
-                  },
-                ),
+                child: ListFavorites(),
               ),
             ],
           ),

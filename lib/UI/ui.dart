@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:nurture/models/cart_model.dart';
 import 'package:nurture/screens/cart.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
@@ -49,8 +51,21 @@ class _CartIconState extends State<CartIcon> {
             children: [
               IconButton(
                   iconSize: 30,
-                  onPressed: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Cart())),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoaderOverlay(
+                                  overlayOpacity: 0.7,
+                                  overlayWidget: Center(
+                                    child: SizedBox(
+                                        height: 200,
+                                        width: 200,
+                                        child: CircularProgressIndicator()),
+                                  ),
+                                  child: Cart(initialCount: _items),
+                                )));
+                  },
                   icon: Icon(
                     Icons.shopping_bag_outlined,
                     color: Colors.black,
