@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nurture/UI/ui.dart';
-import 'package:nurture/models/drawer_model.dart';
-import 'package:nurture/models/favorites_list.dart';
-import 'package:nurture/models/plant.dart';
-import 'package:nurture/services/database.dart';
-import 'package:provider/provider.dart';
+import 'package:nurture/UI/drawer_ui.dart';
+import 'package:nurture/common/favorites_list.dart';
 
 class Favorites extends StatefulWidget {
   @override
@@ -18,10 +15,9 @@ class _FavoritesState extends State<Favorites>
   @override
   Widget build(BuildContext context) {
     print('favorites build');
-    final database = Provider.of<DatabaseService>(context, listen: false);
     return SafeArea(
       child: Scaffold(
-        drawer: DrawerModel(),
+        drawer: DrawerUI(),
         key: _scaffold,
         appBar: AppBar(
           title: Text(

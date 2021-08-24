@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nurture/UI/ui.dart';
-import 'package:nurture/models/drawer_model.dart';
-import 'package:nurture/models/unsplash_dialog.dart';
+import 'package:nurture/UI/drawer_ui.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +77,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             CartIcon(),
           ],
         ),
-        drawer: DrawerModel(),
+        drawer: DrawerUI(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

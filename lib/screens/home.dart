@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nurture/UI/ui.dart';
-import 'package:nurture/models/drawer_model.dart';
-import 'package:nurture/models/plants_list.dart';
+import 'package:nurture/UI/drawer_ui.dart';
+import 'package:nurture/common/plants_list.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
           ],
         ),
         key: _scaffold,
-        drawer: DrawerModel(),
+        drawer: DrawerUI(),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(

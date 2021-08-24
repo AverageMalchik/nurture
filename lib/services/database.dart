@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
-import 'package:nurture/screens/cart.dart';
 
 class DatabaseService {
   final String? uid;
@@ -89,17 +88,16 @@ class DatabaseService {
         .update({'${userCartAction.delete()}': FieldValue.delete()});
   }
 
+  //clear cart
+  Future<void> clearCart() async {
+    await usersCollection.doc(uid).collection('actions').doc('cart').set({});
+  }
+
   //get snapshot of user's cart
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCount() {
     final snapshot =
         usersCollection.doc(uid).collection('actions').doc('cart').snapshots();
     return snapshot;
-  }
-
-  Future<Map<String, dynamic>?> cartList() async {
-    final snapshot =
-        await usersCollection.doc(uid).collection('actions').doc('cart').get();
-    return snapshot.data();
   }
 
   //add to favourites
@@ -128,5 +126,24 @@ class DatabaseService {
         .doc('favorites')
         .snapshots();
     return snapshot;
+  }
+
+  //place order
+  Future<void> placeOrder(List<PlantLite> list) async {
+    final map = UserPlaceOrder(list: list).toMap();
+    await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('myplants')
+        .set(map, SetOptions(merge: true));
+  }
+
+  //retrieve my_plants map from firebase
+  Future<DocumentSnapshot<Map<String, dynamic>>> getMyPlants() async {
+    return await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('myplants')
+        .get();
   }
 }

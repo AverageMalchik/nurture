@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:nurture/models/cart_list.dart';
+import 'package:nurture/common/cart_list.dart';
 import 'package:nurture/models/plant.dart';
-import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 
 class CartWrapper extends StatefulWidget {

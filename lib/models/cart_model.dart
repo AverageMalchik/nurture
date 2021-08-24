@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nurture/models/plant.dart';
-import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 
 class CartModel extends ChangeNotifier {
@@ -38,12 +37,14 @@ class CartModel extends ChangeNotifier {
     bool _reset = true;
     final user = Provider.of<User>(context, listen: false);
     Map<String, dynamic> map = {};
-    for (PlantLite element in list) {
-      _reset = element.count != initialCount;
-      if (!_reset) break;
-      map['${element.plant.id}'] = element.count;
+    if (list.isNotEmpty) {
+      for (PlantLite element in list) {
+        _reset = element.count != initialCount;
+        if (!_reset) break;
+        map['${element.plant.id}'] = element.count;
+      }
     }
-    if (_reset) {
+    if (_reset && map.isNotEmpty) {
       await usersCollection
           .doc(user.uid)
           .collection('actions')
