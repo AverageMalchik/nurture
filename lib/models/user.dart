@@ -72,3 +72,17 @@ class UserPlaceOrder {
     return map;
   }
 }
+
+class UserMyPlants {
+  final int count;
+  final String last;
+  final String water;
+  UserMyPlants({required this.count, required this.last, required this.water});
+  Map<String, dynamic> toMap() {
+    return {
+      'count': count,
+      'last': last,
+      'water': water,
+    };
+  }
+}

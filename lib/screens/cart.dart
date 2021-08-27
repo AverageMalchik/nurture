@@ -77,7 +77,7 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
   Future<void> _next(BuildContext context) async {
     final database = Provider.of<DatabaseService>(context, listen: false);
     final cart = Provider.of<CartModel>(context, listen: false);
-    await database.placeOrder(cart.plantLites);
+    // await database.placeOrder(cart.plantLites);
     cart.removeAll();
     showGeneralDialog(
         context: context,

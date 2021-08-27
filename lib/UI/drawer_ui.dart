@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/screens/favorites.dart';
 import 'package:nurture/screens/home.dart';
@@ -39,8 +40,7 @@ class _DrawerUIState extends State<DrawerUI> {
           ),
           TextButton.icon(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => MyPlants()));
+              Navigator.popAndPushNamed(context, '/myplants');
             },
             label: Text('My Plants'),
             icon: Icon(Icons.wallet_giftcard),

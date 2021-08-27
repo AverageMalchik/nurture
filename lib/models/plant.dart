@@ -55,3 +55,26 @@ class PlantLite {
   final int count;
   PlantLite({required this.plant, required this.count});
 }
+
+class MyPlantreference {
+  final PlantReference plant;
+  final int count;
+  final String time;
+  final String last;
+  final String purchase;
+  MyPlantreference(
+      {required this.last,
+      required this.count,
+      required this.plant,
+      required this.purchase,
+      required this.time});
+  factory MyPlantreference.fromMap(Map<String, dynamic> data) {
+    final int count = data['count'];
+    final PlantReference plant = data['plant'];
+    final String purchase = data['purchase'];
+    final String time = data['water'];
+    final String last = data['last'];
+    return MyPlantreference(
+        count: count, plant: plant, purchase: purchase, time: time, last: last);
+  }
+}

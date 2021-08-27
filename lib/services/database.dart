@@ -68,8 +68,6 @@ class DatabaseService {
     }).toList();
   }
 
-  //converting available plants query snapshot into list without Stream
-
   //add to user's cart
   Future<void> addCart(UserCartAction userCartAction) async {
     await usersCollection
@@ -129,21 +127,54 @@ class DatabaseService {
   }
 
   //place order
-  Future<void> placeOrder(List<PlantLite> list) async {
-    final map = UserPlaceOrder(list: list).toMap();
+  // Future<void> placeOrder(List<PlantLite> list) async {
+  //   final map = UserPlaceOrder(list: list).toMap();
+  //   await usersCollection
+  //       .doc(uid)
+  //       .collection('actions')
+  //       .doc('myplants')
+  //       .collection(collectionPath);
+  // }
+
+  Future<void> changeMyPlants(
+      String collectionId, String documentId, UserMyPlants userMyPlants) async {
+    print('changeMyPlants');
     await usersCollection
         .doc(uid)
         .collection('actions')
         .doc('myplants')
-        .set(map, SetOptions(merge: true));
+        .collection(collectionId)
+        .doc(documentId)
+        .set(userMyPlants.toMap());
   }
 
   //retrieve my_plants map from firebase
-  Future<DocumentSnapshot<Map<String, dynamic>>> getMyPlants() async {
-    return await usersCollection
-        .doc(uid)
-        .collection('actions')
-        .doc('myplants')
-        .get();
+  Future<List<MyPlantreference>> getMyPlants(
+      List<PlantReference> plants) async {
+    List<MyPlantreference> list = [];
+    for (int i = 0; i < plants.length; i++) {
+      final snapshots = await usersCollection
+          .doc(uid)
+          .collection('actions')
+          .doc('myplants')
+          .collection(plants[i].id)
+          .get();
+      list.addAll(convertMyPlantList(snapshots, plants[i]));
+    }
+    return list;
+  }
+
+  List<MyPlantreference> convertMyPlantList(
+      QuerySnapshot snapshot, PlantReference plant) {
+    if (snapshot.size != 0) {
+      return snapshot.docs.map((doc) {
+        final map = doc.data() as Map<String, dynamic>;
+        map['purchase'] = doc.id;
+        map['plant'] = plant;
+        return MyPlantreference.fromMap(map);
+      }).toList();
+    } else {
+      return [];
+    }
   }
 }
