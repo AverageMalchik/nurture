@@ -58,17 +58,16 @@ class UserFavoriteAction {
 }
 
 class UserPlaceOrder {
-  final List<PlantLite> list;
-  UserPlaceOrder({required this.list});
+  final PlantLite plantLite;
+  UserPlaceOrder({required this.plantLite});
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    list.forEach((plantLite) {
-      if (plantLite.plant.water == "Light")
-        map['${plantLite.plant.id}'] = DateTime.now().add(Duration(hours: 6));
-      else
-        map['${plantLite.plant.id}'] = DateTime.now().add(Duration(hours: 12));
-      map['${plantLite.plant.id}count'] = plantLite.count;
-    });
+    if (plantLite.plant.water == "Light")
+      map['water'] = DateTime.now().add(Duration(minutes: 60)).toString();
+    else
+      map['water'] = DateTime.now().add(Duration(minutes: 30)).toString();
+    map['last'] = DateTime.now().toString();
+    map['count'] = plantLite.count;
     return map;
   }
 }

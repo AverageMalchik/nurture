@@ -126,16 +126,25 @@ class DatabaseService {
     return snapshot;
   }
 
-  //place order
-  // Future<void> placeOrder(List<PlantLite> list) async {
-  //   final map = UserPlaceOrder(list: list).toMap();
-  //   await usersCollection
-  //       .doc(uid)
-  //       .collection('actions')
-  //       .doc('myplants')
-  //       .collection(collectionPath);
-  // }
+  //place order and remove from stock too
+  Future<void> placeOrder(List<PlantLite> list) async {
+    list.forEach((plantLite) async {
+      await plantsCollection
+          .doc(plantLite.plant.id)
+          .update({'stock': FieldValue.increment(-plantLite.count)});
+      var now = DateTime.now().toString();
+      await usersCollection
+          .doc(uid)
+          .collection('actions')
+          .doc('myplants')
+          .collection(plantLite.plant.id)
+          .doc(now)
+          .set(UserPlaceOrder(plantLite: plantLite).toMap(),
+              SetOptions(merge: true));
+    });
+  }
 
+  //update subcollections and documents in myplants
   Future<void> changeMyPlants(
       String collectionId, String documentId, UserMyPlants userMyPlants) async {
     print('changeMyPlants');

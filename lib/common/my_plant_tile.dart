@@ -40,14 +40,15 @@ class _MyPlantTileState extends State<MyPlantTile>
     offset = widget.myPlant.plant.water != 'Frequent' ? 60 : 30;
     print(widget.myPlant.time + " vs " + DateTime.now().toString());
     safe = DateTime.parse(widget.myPlant.time).isAfter(DateTime.now());
+    prev = widget.myPlant.last;
     due = widget.myPlant.time;
     requiredforUnsafe = !safe ? checkTime() : 0;
     requiredforUnsafe =
         requiredforUnsafe.isNegative ? -requiredforUnsafe : requiredforUnsafe;
-    actions = requiredforUnsafe;
+    if (safe) actions = 0;
     dead = actions > (widget.myPlant.plant.water != 'Frequent' ? 12 : 6);
     print(requiredforUnsafe.toString() + ' with offset: $offset');
-    prev = widget.myPlant.last;
+
     _controller = AnimationController(
         vsync: this, duration: Duration(milliseconds: 2000));
     _controller.repeat(reverse: true);
@@ -88,8 +89,16 @@ class _MyPlantTileState extends State<MyPlantTile>
     var now = DateTime.now();
     now = DateTime(
         now.year, now.month, now.day, now.hour, now.minute, now.second);
-    var difference = dueTime.difference(now).inMinutes;
-    return (difference / offset).ceil();
+    var lastTime = DateTime.parse(prev);
+    lastTime = DateTime(lastTime.year, lastTime.month, lastTime.day,
+        lastTime.hour, lastTime.minute, lastTime.second);
+    var difference1 = dueTime.difference(now).inMinutes;
+    var difference2 = dueTime.difference(lastTime).inMinutes;
+    actions = -(difference1 / offset).ceil();
+    if (!difference2.isNegative)
+      return (difference1 / offset).ceil();
+    else
+      return (difference1 / offset).ceil() - (difference2 / offset).ceil();
   }
 
   //update due
@@ -114,7 +123,7 @@ class _MyPlantTileState extends State<MyPlantTile>
     else if (difference < 60 && difference >= 2)
       return '$difference minutes';
     else
-      return 'few moments';
+      return 'a few moments';
   }
 
   @override
@@ -386,14 +395,14 @@ class _MyPlantTileState extends State<MyPlantTile>
                   BoxShadow(
                       offset: Offset(0, 15),
                       blurRadius: 10,
-                      color: Colors.grey.shade800)
+                      color: Colors.grey.shade700)
                 ],
                 image: DecorationImage(
                     image:
                         AssetImage('assets/${widget.myPlant.plant.name}.png'),
                     fit: BoxFit.cover,
-                    colorFilter:
-                        ColorFilter.mode(Colors.grey, BlendMode.saturation)),
+                    colorFilter: ColorFilter.mode(
+                        Colors.grey.shade400, BlendMode.saturation)),
                 gradient: LinearGradient(colors: [
                   Colors.grey.shade400,
                   Colors.grey.shade900,
