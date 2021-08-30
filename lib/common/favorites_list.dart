@@ -16,13 +16,25 @@ class ListFavorites extends StatefulWidget {
 class _ListFavoritesState extends State<ListFavorites>
     with TickerProviderStateMixin {
   int _plantIndex = 0;
+  late AnimationController _entry;
   late AnimationController _controller;
   late AnimationController _shaker;
   late Animation<EdgeInsets> _animateSize;
   late Animation<Color?> _animateColor;
   late Animation<Offset> _animateShake;
+
+  final _left = Tween<Offset>(begin: Offset(-2, 0), end: Offset.zero);
+  final _right = Tween<Offset>(begin: Offset(2, 0), end: Offset.zero);
+  late Animation<Offset> left;
+  late Animation<Offset> right;
   @override
   void initState() {
+    _entry =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    left = _left
+        .animate(CurvedAnimation(parent: _entry, curve: Curves.elasticOut));
+    right = _right
+        .animate(CurvedAnimation(parent: _entry, curve: Curves.elasticOut));
     _controller = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 1000),
@@ -59,6 +71,7 @@ class _ListFavoritesState extends State<ListFavorites>
 
   @override
   void dispose() {
+    _entry.dispose();
     _controller.dispose();
     _shaker.dispose();
     super.dispose();
@@ -72,6 +85,7 @@ class _ListFavoritesState extends State<ListFavorites>
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: database.getFavorites(),
         builder: (context, snapshot) {
+          _entry.reset();
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Shimmer.fromColors(
               child: Container(
@@ -154,7 +168,11 @@ class _ListFavoritesState extends State<ListFavorites>
                           break;
                         }
                       }
-                      return FavoriteTile(plant: plants[_plantIndex]);
+                      _entry.forward();
+                      return FavoriteTile(
+                        plant: plants[_plantIndex],
+                        key: ValueKey(plants[_plantIndex].id),
+                      );
                     }
                   });
             } else {

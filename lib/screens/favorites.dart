@@ -10,7 +10,7 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites>
     with SingleTickerProviderStateMixin {
-  var _scaffold = GlobalKey<ScaffoldState>();
+  final _scaffold = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {

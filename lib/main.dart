@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
             routes: {
               '/myplants': (_) => RootWidget(),
             },
+            theme: ThemeData(accentColorBrightness: Brightness.values[0]),
             home: Wrapper(
               userSnapshot: snapshot,
             ),

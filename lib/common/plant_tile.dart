@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/screens/hero_plant.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:nurture/UI/ui.dart';
@@ -36,8 +37,7 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
   @override
   void initState() {
     //check if product is in stock
-    _inStock = widget.plant.stock >= 1 ? true : false;
-    //controller for border glow animation
+    _inStock = widget.plant.stock >= 2 ? true : false;
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 300),
@@ -125,152 +125,246 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
             height: 300,
             margin: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: _inStock
-                      ? _coverImage
-                      : ColorFiltered(
-                          colorFilter: _colorFilter,
-                          child: _coverImage,
-                        ),
-                ),
-                FadeTransition(
-                  opacity: animation,
-                  child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.shade300,
+                      offset: Offset(0, 3),
+                      blurRadius: 1),
+                ]),
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 2000),
+                      pageBuilder: (context, _, __) {
+                        return HeroPlant(plant: widget.plant, count: _count);
+                      })),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                          Colors.deepPurple.shade100, BlendMode.modulate),
-                      child: _coverImage,
+                    child: _inStock
+                        ? Hero(
+                            tag: 'hero${widget.plant.cover}',
+                            child: _coverImage,
+                            flightShuttleBuilder:
+                                (context, animation, direction, _, __) {
+                              if (direction == HeroFlightDirection.push) {
+                                return SizeTransition(
+                                  sizeFactor: animation,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(75),
+                                    child: _coverImage,
+                                  ),
+                                );
+                              } else {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: _coverImage,
+                                );
+                              }
+                            },
+                          )
+                        : ColorFiltered(
+                            colorFilter: _colorFilter,
+                            child: Hero(
+                              tag: 'hero${widget.plant.cover}',
+                              child: _coverImage,
+                              flightShuttleBuilder:
+                                  (context, animation, direction, _, __) {
+                                if (direction == HeroFlightDirection.push) {
+                                  return SizeTransition(
+                                    sizeFactor: animation,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(75),
+                                      child: ColorFiltered(
+                                          colorFilter: _colorFilter,
+                                          child: _coverImage),
+                                    ),
+                                  );
+                                } else {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: ColorFiltered(
+                                        colorFilter: _colorFilter,
+                                        child: _coverImage),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                  ),
+                  FadeTransition(
+                    opacity: animation,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            Colors.deepPurple.shade100, BlendMode.modulate),
+                        child: _coverImage,
+                      ),
                     ),
                   ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(widget.plant.name),
-                    _inStock
-                        ? Text('\$' + widget.plant.pricing.toString())
-                        : Text('Unavailable'),
-                    SizedBox(
-                      height: 10,
-                    )
-                  ],
-                ),
-                //heart lottie
-                Positioned(
-                    top: 1,
-                    right: 1,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(widget.plant.name),
+                      _inStock
+                          ? Text('\$' + widget.plant.pricing.toString())
+                          : Text('Unavailable'),
+                      SizedBox(
+                        height: 10,
+                      )
+                    ],
+                  ),
+                  //heart lottie
+                  Positioned(
+                      top: 1,
+                      right: 1,
+                      child:
+                          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                              stream: database.getFavorites(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Container(
+                                    color: Colors.transparent,
+                                    width: 50,
+                                    height: 50,
+                                    child: Lottie.asset(
+                                      'assets/heart.json',
+                                      animate: false,
+                                    ),
+                                  );
+                                } else {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data!
+                                        .data()!
+                                        .containsKey('${widget.plant.id}')) {
+                                      _lottieController.forward();
+                                    }
+                                  }
+                                  print('inside lottie streambuilder');
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      if (_focused) {
+                                        _lottieController.reverse();
+                                        await database.removeFavorites(
+                                            UserFavoriteAction(
+                                                id: widget.plant.id));
+                                      } else {
+                                        _lottieController.forward();
+                                        await database.addFavorites(
+                                            UserFavoriteAction(
+                                                id: widget.plant.id));
+                                      }
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      width: 50,
+                                      height: 50,
+                                      child: Lottie.asset(
+                                        'assets/heart.json',
+                                        repeat: false,
+                                        controller: _lottieController,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              })),
+                  Positioned(
+                    top: 2,
+                    left: 2,
                     child: StreamBuilder<
                             DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: database.getFavorites(),
+                        stream: database.getCount(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Container(
-                              color: Colors.transparent,
-                              width: 50,
-                              height: 50,
-                              child: Lottie.asset(
-                                'assets/heart.json',
-                                animate: false,
-                              ),
-                            );
+                            _loadingCount = true;
                           } else {
+                            _loadingCount = false;
                             if (snapshot.hasData) {
                               if (snapshot.data!
                                   .data()!
-                                  .containsKey('${widget.plant.id}')) {
-                                _lottieController.forward();
-                              }
-                            }
-                            print('inside lottie streambuilder');
-                            return GestureDetector(
-                              onTap: () async {
-                                if (_focused) {
-                                  _lottieController.reverse();
-                                  await database.removeFavorites(
-                                      UserFavoriteAction(id: widget.plant.id));
-                                } else {
-                                  _lottieController.forward();
-                                  await database.addFavorites(
-                                      UserFavoriteAction(id: widget.plant.id));
-                                }
-                              },
-                              child: Container(
-                                color: Colors.transparent,
-                                width: 50,
-                                height: 50,
-                                child: Lottie.asset(
-                                  'assets/heart.json',
-                                  repeat: false,
-                                  controller: _lottieController,
-                                ),
-                              ),
-                            );
-                          }
-                        })),
-                Positioned(
-                  top: 2,
-                  left: 2,
-                  child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                      stream: database.getCount(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          _loadingCount = true;
-                        } else {
-                          _loadingCount = false;
-                          if (snapshot.hasData) {
-                            if (snapshot.data!
-                                .data()!
-                                .containsKey(widget.plant.id))
-                              _count =
-                                  snapshot.data!.data()!['${widget.plant.id}'];
-                            else
+                                  .containsKey(widget.plant.id))
+                                _count = snapshot.data!
+                                    .data()!['${widget.plant.id}'];
+                              else
+                                _count = 0;
+                            } else {
                               _count = 0;
-                          } else {
-                            _count = 0;
+                            }
                           }
-                        }
-                        _endColor = Colors.deepPurple.shade400;
-                        return AnimatedSwitcher(
-                          switchInCurve: Curves.easeInBack,
-                          duration: Duration(milliseconds: 800),
-                          child: _loadingCount
-                              ? SizedBox()
-                              : GestureDetector(
-                                  onTap: _inStock
-                                      ? (_count == 2
-                                          ? null
-                                          : () async {
-                                              _controller.forward();
-                                              _plus.forward();
-                                              ++_count;
-                                              await database.addCart(
-                                                  UserCartAction(
-                                                      id: widget.plant.id,
-                                                      amount: _count));
-                                            })
-                                      : () {},
-                                  child: AnimatedBuilder(
-                                    animation: _plus.view,
-                                    builder:
-                                        (BuildContext context, Widget? child) {
-                                      return Container(
-                                        height: _animateSize.value,
-                                        width: _animateSize.value,
+                          _endColor = Colors.deepPurple.shade400;
+                          return AnimatedSwitcher(
+                            switchInCurve: Curves.easeInBack,
+                            duration: Duration(milliseconds: 800),
+                            child: _loadingCount
+                                ? SizedBox()
+                                : GestureDetector(
+                                    onTap: _inStock
+                                        ? (_count == 2
+                                            ? null
+                                            : () async {
+                                                _controller.forward();
+                                                _plus.forward();
+                                                ++_count;
+                                                await database.addCart(
+                                                    UserCartAction(
+                                                        id: widget.plant.id,
+                                                        amount: _count));
+                                              })
+                                        : () {},
+                                    child: AnimatedBuilder(
+                                      animation: _plus.view,
+                                      builder: (BuildContext context,
+                                          Widget? child) {
+                                        return Container(
+                                          height: _animateSize.value,
+                                          width: _animateSize.value,
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                              color: _count == 2
+                                                  ? Colors.deepPurple[200]
+                                                  : _endColor,
+                                              shape: BoxShape.circle),
+                                          child: Stack(
+                                            children: [
+                                              Positioned(
+                                                bottom: -2,
+                                                right: -2,
+                                                child: Icon(
+                                                  Icons.add,
+                                                  color: Colors.deepPurple[600],
+                                                  size: _animateSize.value *
+                                                      26 /
+                                                      30,
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                                size: _animateSize.value *
+                                                    26 /
+                                                    30,
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 30,
+                                        width: 30,
                                         alignment: Alignment.center,
                                         margin: EdgeInsets.all(8),
                                         decoration: BoxDecoration(
                                             color: _count == 2
                                                 ? Colors.deepPurple[200]
-                                                : _endColor,
+                                                : Colors.deepPurple[400],
                                             shape: BoxShape.circle),
                                         child: Stack(
                                           children: [
@@ -280,56 +374,24 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                                               child: Icon(
                                                 Icons.add,
                                                 color: Colors.deepPurple[600],
-                                                size: _animateSize.value *
-                                                    26 /
-                                                    30,
+                                                size: 26,
                                               ),
                                             ),
                                             Icon(
                                               Icons.add,
                                               color: Colors.white,
-                                              size:
-                                                  _animateSize.value * 26 / 30,
+                                              size: 26,
                                             ),
                                           ],
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 30,
-                                      width: 30,
-                                      alignment: Alignment.center,
-                                      margin: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: _count == 2
-                                              ? Colors.deepPurple[200]
-                                              : Colors.deepPurple[400],
-                                          shape: BoxShape.circle),
-                                      child: Stack(
-                                        children: [
-                                          Positioned(
-                                            bottom: -2,
-                                            right: -2,
-                                            child: Icon(
-                                              Icons.add,
-                                              color: Colors.deepPurple[600],
-                                              size: 26,
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                            size: 26,
-                                          ),
-                                        ],
                                       ),
                                     ),
                                   ),
-                                ),
-                        );
-                      }),
-                )
-              ],
+                          );
+                        }),
+                  )
+                ],
+              ),
             ),
           )
         : loadingShimmer();
