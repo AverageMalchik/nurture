@@ -9,12 +9,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var _scaffold = GlobalKey<ScaffoldState>();
+  final _scaffold = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xffebeaef),
         appBar: AppBar(
           title: Text(
             'Home',

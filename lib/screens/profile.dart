@@ -12,7 +12,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
-  var _scaffold = GlobalKey<ScaffoldState>();
+  final _scaffold = GlobalKey<ScaffoldState>();
   String? _currentName;
 
   bool _guest = false;

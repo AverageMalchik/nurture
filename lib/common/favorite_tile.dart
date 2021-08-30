@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nurture/models/plant.dart';
+import 'package:nurture/screens/hero_plant.dart';
 // import 'package:flutter/physics.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FavoriteTile extends StatefulWidget {
   final PlantReference plant;
-  FavoriteTile({required this.plant});
+  final Key? key;
+  FavoriteTile({required this.plant, this.key});
   @override
   _FavoriteTileState createState() => _FavoriteTileState();
 }
@@ -142,13 +144,44 @@ class _FavoriteTileState extends State<FavoriteTile>
             childWhenDragging: SizedBox(),
             child: SlideTransition(
               position: _shakeChild,
-              child: Container(
-                margin: EdgeInsets.all(20),
-                height: 300,
-                width: 300,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: _cover,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 2000),
+                          pageBuilder: (context, _, __) {
+                            return HeroPlant(count: 0, plant: widget.plant);
+                          }));
+                },
+                child: Container(
+                  margin: EdgeInsets.all(20),
+                  height: 300,
+                  width: 300,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Hero(
+                      tag: 'hero${widget.plant.cover}',
+                      child: _cover,
+                      flightShuttleBuilder:
+                          (context, animation, direction, _, __) {
+                        if (direction == HeroFlightDirection.push) {
+                          return SizeTransition(
+                            sizeFactor: animation,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(75),
+                              child: _cover,
+                            ),
+                          );
+                        } else {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: _cover,
+                          );
+                        }
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -60,7 +60,7 @@ class _CartIconState extends State<CartIcon> {
                             builder: (context) => LoaderOverlay(
                                   overlayOpacity: 0.7,
                                   overlayWidget: Center(
-                                    child: SizedBox(
+                                    child: Container(
                                         height: 200,
                                         width: 200,
                                         child: CircularProgressIndicator()),
@@ -185,6 +185,63 @@ class _UnsplashDialogState extends State<UnsplashDialog> {
           );
         }
       },
+    );
+  }
+}
+
+class PageDots extends StatelessWidget {
+  final bool focus;
+  PageDots({required this.focus});
+  @override
+  Widget build(BuildContext context) {
+    return !focus
+        ? Container(
+            margin: EdgeInsets.all(5),
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+          )
+        : Container(
+            margin: EdgeInsets.all(5),
+            width: 21,
+            height: 7,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(3.5)),
+                color: Colors.blueGrey),
+          );
+  }
+}
+
+class RoundFeatures extends StatelessWidget {
+  final int index;
+  final String feature;
+  RoundFeatures({required this.index, required this.feature});
+  final listIcons = [Icons.place, Icons.ac_unit, Icons.accessibility];
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.all(15),
+      alignment: Alignment.center,
+      height: 100,
+      width: 100,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(listIcons[index]),
+          Text(
+            feature,
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }

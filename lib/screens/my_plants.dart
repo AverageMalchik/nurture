@@ -88,7 +88,7 @@ class MyPlants extends StatefulWidget {
 }
 
 class _MyPlantsState extends State<MyPlants> {
-  var _scaffold = GlobalKey<ScaffoldState>();
+  final _scaffold = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
