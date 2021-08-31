@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nurture/UI/ui.dart';
 import 'package:nurture/services/authentication.dart';
 
 class SignIn extends StatefulWidget {
@@ -14,6 +15,7 @@ class _SignInState extends State<SignIn> {
     return _loading
         ? SafeArea(
             child: Scaffold(
+              backgroundColor: Color(0xffecfddb),
               body: Center(
                 child: Stack(
                   alignment: Alignment.center,
@@ -23,41 +25,15 @@ class _SignInState extends State<SignIn> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('NURTURE'),
+                          Text(
+                            'NURTURE',
+                            style: TextStyle(
+                                fontSize: 40, fontFamily: 'MazzardBold'),
+                          ),
                           SizedBox(
-                            height: 20,
+                            height: 100,
                           ),
-                          Container(
-                            height: 50,
-                            width: 180,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                      offset: Offset(0, 3),
-                                      blurRadius: 2,
-                                      color: Colors.grey.shade400)
-                                ]),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/google_icon.png',
-                                  height: 25,
-                                  width: 25,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  'Sign in with Google',
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.grey[700]),
-                                )
-                              ],
-                            ),
-                          ),
+                          GoogleButton(),
                           SizedBox(
                             height: 20,
                           ),
@@ -68,7 +44,10 @@ class _SignInState extends State<SignIn> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.orange),
                                 onPressed: () {},
-                                child: Text('Sign in as Guest'),
+                                child: Text('Sign in as Guest',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontFamily: 'MazzardBold')),
                               ),
                             ],
                           )
@@ -86,13 +65,16 @@ class _SignInState extends State<SignIn> {
           )
         : SafeArea(
             child: Scaffold(
+              backgroundColor: Color(0xffecfddb),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('NURTURE'),
+                    Text('NURTURE',
+                        style:
+                            TextStyle(fontSize: 40, fontFamily: 'MazzardBold')),
                     SizedBox(
-                      height: 20,
+                      height: 100,
                     ),
                     GestureDetector(
                       onTap: () async {

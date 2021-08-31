@@ -89,6 +89,15 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
-  #
+  fonts:
+    - family: MazzardBold
+      fonts:
+        - asset: fonts/MazzardH-Bold.otf
+    - family: MazzardLight
+      fonts:
+        - asset: fonts/MazzardH-ExtraLight.otf
+    - family: MazzardExtraBold
+      fonts:
+        - asset: fonts/MazzardH-ExtraBold.otf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

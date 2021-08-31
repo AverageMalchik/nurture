@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/services/authentication.dart';
-import 'package:provider/provider.dart';
 
 class DatabaseService {
   final String? uid;
