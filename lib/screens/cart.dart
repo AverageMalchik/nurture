@@ -259,46 +259,71 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                         ),
                       ),
                       GestureDetector(
-                        onLongPress: () {
-                          _placeOrder.forward();
-                        },
-                        onLongPressUp: () async {
-                          if (!_placeOrder.isCompleted)
-                            _placeOrder.reverse();
-                          else {
-                            await cart.resetCache(context, widget.initialCount);
-                            await _next(context);
-                          }
-                        },
-                        child: Consumer<CartModel>(
-                          builder: (context, model, child) {
-                            int items = 0;
-                            for (var plantL in model.plantLites)
-                              items += plantL.count;
-                            if (items == 0)
-                              return SizedBox();
-                            else
-                              return AnimatedBuilder(
-                                animation: _placeOrder.view,
-                                builder: (context, child) {
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    height: 40,
-                                    width: 200,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(color: Colors.grey)),
-                                    child: Text(
-                                      'PLACE ORDER',
-                                      style: TextStyle(
-                                        color: _color.value,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
+                        onLongPress: !_guest
+                            ? () {
+                                _placeOrder.forward();
+                              }
+                            : () {},
+                        onLongPressUp: !_guest
+                            ? () async {
+                                if (!_placeOrder.isCompleted)
+                                  _placeOrder.reverse();
+                                else {
+                                  await cart.resetCache(
+                                      context, widget.initialCount);
+                                  await _next(context);
+                                }
+                              }
+                            : () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title:
+                                            Icon(Icons.warning_amber_rounded),
+                                        content: Text(
+                                            'Please sign in to place your order'),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  Navigator.pop(context);
+                                                  loadingOverlay(context);
+                                                  cart.removeAll();
+                                                  await DatabaseService(
+                                                          uid: user.uid)
+                                                      .transferData(context);
+                                                },
+                                                child: GoogleButton(),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      );
+                                    });
+                              },
+                        child: AnimatedBuilder(
+                          animation: _placeOrder.view,
+                          builder: (context, child) {
+                            return Container(
+                              alignment: Alignment.center,
+                              height: 40,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.grey)),
+                              child: Text(
+                                'PLACE ORDER',
+                                style: TextStyle(
+                                  color: _color.value,
+                                  fontSize: 17,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ),
