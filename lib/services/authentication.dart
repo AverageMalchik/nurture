@@ -1,18 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nurture/services/database.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  //sign in as Guest
+  // Future<void> signInasGuest() async {
+  //   try {
+  //     await _auth
+  //         .signInWithEmailAndPassword(
+  //             email: 'guest@baboochka.com', password: 'guest123')
+  //         .then((value) => value.user!.updateDisplayName('Guest'));
+  //   } on FirebaseAuthException catch (err) {
+  //     print(err.toString());
+  //   }
+  // }
+
   //sign in anonymously
-  Future<void> signInasGuest() async {
+  Future<void> signInAnonymously() async {
     try {
       await _auth
-          .signInWithEmailAndPassword(
-              email: 'guest@baboochka.com', password: 'guest123')
+          .signInAnonymously()
           .then((value) => value.user!.updateDisplayName('Guest'));
-    } on FirebaseAuthException catch (err) {
+      await DatabaseService(uid: _auth.currentUser!.uid).setAnonymousProfile();
+    } catch (err) {
       print(err.toString());
     }
   }

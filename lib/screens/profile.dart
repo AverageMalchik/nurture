@@ -55,7 +55,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: false);
     final database = Provider.of<DatabaseService>(context, listen: false);
-    if (user.displayName == 'Guest') _guest = true;
+    if (user.isAnonymous) _guest = true;
+    print('cum: $_guest');
     return SafeArea(
       child: Scaffold(
         key: _scaffold,
@@ -93,12 +94,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           color: Colors.greenAccent,
                         );
                       else {
-                        final photoReference = snapshot.data;
                         return CircleAvatar(
                           radius: 100,
-                          backgroundImage: NetworkImage(photoReference
-                                  ?.photoURL ??
-                              'https://media.tarkett-image.com/large/TH_24567080_24594080_24596080_24601080_24563080_24565080_24588080_001.jpg'),
+                          backgroundImage:
+                              NetworkImage(snapshot.data!.photoURL),
                           backgroundColor: Colors.transparent,
                         );
                       }

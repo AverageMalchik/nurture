@@ -239,7 +239,8 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                                     ),
                                   );
                                 } else {
-                                  if (snapshot.hasData) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data!.exists) {
                                     if (snapshot.data!
                                         .data()!
                                         .containsKey('${widget.plant.id}')) {
@@ -283,10 +284,35 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            _loadingCount = true;
+                            return Container(
+                              height: 30,
+                              width: 30,
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Colors.deepPurple[200],
+                                  shape: BoxShape.circle),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    bottom: -2,
+                                    right: -2,
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.deepPurple[600],
+                                      size: 26,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
+                                ],
+                              ),
+                            );
                           } else {
-                            _loadingCount = false;
-                            if (snapshot.hasData) {
+                            if (snapshot.data!.exists && snapshot.hasData) {
                               if (snapshot.data!
                                   .data()!
                                   .containsKey(widget.plant.id))
@@ -302,91 +328,83 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                           return AnimatedSwitcher(
                             switchInCurve: Curves.easeInBack,
                             duration: Duration(milliseconds: 800),
-                            child: _loadingCount
-                                ? SizedBox()
-                                : GestureDetector(
-                                    onTap: _inStock
-                                        ? (_count == 2
-                                            ? null
-                                            : () async {
-                                                _controller.forward();
-                                                _plus.forward();
-                                                ++_count;
-                                                await database.addCart(
-                                                    UserCartAction(
-                                                        id: widget.plant.id,
-                                                        amount: _count));
-                                              })
-                                        : () {},
-                                    child: AnimatedBuilder(
-                                      animation: _plus.view,
-                                      builder: (BuildContext context,
-                                          Widget? child) {
-                                        return Container(
-                                          height: _animateSize.value,
-                                          width: _animateSize.value,
-                                          alignment: Alignment.center,
-                                          margin: EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                              color: _count == 2
-                                                  ? Colors.deepPurple[200]
-                                                  : _endColor,
-                                              shape: BoxShape.circle),
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                bottom: -2,
-                                                right: -2,
-                                                child: Icon(
-                                                  Icons.add,
-                                                  color: Colors.deepPurple[600],
-                                                  size: _animateSize.value *
-                                                      26 /
-                                                      30,
-                                                ),
-                                              ),
-                                              Icon(
-                                                Icons.add,
-                                                color: Colors.white,
-                                                size: _animateSize.value *
-                                                    26 /
-                                                    30,
-                                              ),
-                                            ],
+                            child: GestureDetector(
+                              onTap: _inStock
+                                  ? (_count == 2
+                                      ? null
+                                      : () async {
+                                          _controller.forward();
+                                          _plus.forward();
+                                          ++_count;
+                                          await database.addCart(UserCartAction(
+                                              id: widget.plant.id,
+                                              amount: _count));
+                                        })
+                                  : () {},
+                              child: AnimatedBuilder(
+                                animation: _plus.view,
+                                builder: (BuildContext context, Widget? child) {
+                                  return Container(
+                                    height: _animateSize.value,
+                                    width: _animateSize.value,
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        color: _count == 2
+                                            ? Colors.deepPurple[200]
+                                            : _endColor,
+                                        shape: BoxShape.circle),
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                          bottom: -2,
+                                          right: -2,
+                                          child: Icon(
+                                            Icons.add,
+                                            color: Colors.deepPurple[600],
+                                            size: _animateSize.value * 26 / 30,
                                           ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 30,
-                                        width: 30,
-                                        alignment: Alignment.center,
-                                        margin: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                            color: _count == 2
-                                                ? Colors.deepPurple[200]
-                                                : Colors.deepPurple[400],
-                                            shape: BoxShape.circle),
-                                        child: Stack(
-                                          children: [
-                                            Positioned(
-                                              bottom: -2,
-                                              right: -2,
-                                              child: Icon(
-                                                Icons.add,
-                                                color: Colors.deepPurple[600],
-                                                size: 26,
-                                              ),
-                                            ),
-                                            Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                              size: 26,
-                                            ),
-                                          ],
+                                        ),
+                                        Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                          size: _animateSize.value * 26 / 30,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: _count == 2
+                                          ? Colors.deepPurple[200]
+                                          : Colors.deepPurple[400],
+                                      shape: BoxShape.circle),
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        bottom: -2,
+                                        right: -2,
+                                        child: Icon(
+                                          Icons.add,
+                                          color: Colors.deepPurple[600],
+                                          size: 26,
                                         ),
                                       ),
-                                    ),
+                                      Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                        size: 26,
+                                      ),
+                                    ],
                                   ),
+                                ),
+                              ),
+                            ),
                           );
                         }),
                   )

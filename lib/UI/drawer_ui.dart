@@ -1,9 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/screens/favorites.dart';
 import 'package:nurture/screens/home.dart';
-import 'package:nurture/screens/my_plants.dart';
 import 'package:nurture/screens/profile.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/services/database.dart';
@@ -17,6 +16,7 @@ class DrawerUI extends StatefulWidget {
 class _DrawerUIState extends State<DrawerUI> {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     return Drawer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,9 +67,13 @@ class _DrawerUIState extends State<DrawerUI> {
             ),
           ),
           TextButton(
-              onPressed: () async {
-                await AuthenticationService().signOut();
-              },
+              onPressed: !user.isAnonymous
+                  ? () async {
+                      await AuthenticationService().signOut();
+                    }
+                  : () async {
+                      user.delete();
+                    },
               child: Text('Sign Out')),
           SizedBox(
             height: 20,

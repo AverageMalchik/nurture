@@ -38,64 +38,78 @@ class _CartIconState extends State<CartIcon> {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: database.getCount(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            _items = 0;
-            var _list = snapshot.data!.data()!.values.toList();
-            for (int items in _list) {
-              _items += items;
+          if (snapshot.connectionState != ConnectionState.waiting) {
+            if (snapshot.data!.exists && snapshot.hasData) {
+              _items = 0;
+              var _list = snapshot.data!.data()!.values.toList();
+              for (int items in _list) {
+                _items += items;
+              }
+              _opacity = _items != 0 ? 1.0 : 0.0;
+            } else {
+              _opacity = 0;
+              _items = 0;
             }
-            _opacity = _items != 0 ? 1.0 : 0.0;
+            return Stack(
+              children: [
+                IconButton(
+                    iconSize: 30,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoaderOverlay(
+                                    overlayOpacity: 0.7,
+                                    overlayWidget: Center(
+                                      child: Container(
+                                          height: 200,
+                                          width: 200,
+                                          child: CircularProgressIndicator()),
+                                    ),
+                                    child: Cart(initialCount: _items),
+                                  )));
+                    },
+                    icon: Icon(
+                      Icons.shopping_bag_outlined,
+                      color: Colors.black,
+                    )),
+                Positioned(
+                    top: 5,
+                    left: 1,
+                    child: AnimatedOpacity(
+                      curve: Curves.easeInCubic,
+                      duration: Duration(milliseconds: 500),
+                      opacity: _opacity,
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 20,
+                        height: 20,
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.blueGrey,
+                        ),
+                        child: Text(
+                          '${_items.toString()}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ))
+              ],
+            );
           } else {
-            _opacity = 0;
-            _items = 0;
+            return Stack(
+              children: [
+                IconButton(
+                    iconSize: 30,
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.shopping_bag_outlined,
+                      color: Colors.black,
+                    ))
+              ],
+            );
           }
-          return Stack(
-            children: [
-              IconButton(
-                  iconSize: 30,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LoaderOverlay(
-                                  overlayOpacity: 0.7,
-                                  overlayWidget: Center(
-                                    child: Container(
-                                        height: 200,
-                                        width: 200,
-                                        child: CircularProgressIndicator()),
-                                  ),
-                                  child: Cart(initialCount: _items),
-                                )));
-                  },
-                  icon: Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.black,
-                  )),
-              Positioned(
-                  top: 5,
-                  left: 1,
-                  child: AnimatedOpacity(
-                    curve: Curves.easeInCubic,
-                    duration: Duration(milliseconds: 500),
-                    opacity: _opacity,
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 20,
-                      height: 20,
-                      padding: EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.blueGrey,
-                      ),
-                      child: Text(
-                        '${_items.toString()}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ))
-            ],
-          );
         });
   }
 }
