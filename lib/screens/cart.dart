@@ -304,47 +304,7 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                                                           uid: user.uid)
                                                       .transferData(context);
                                                 },
-                                                child: Container(
-                                                  margin: EdgeInsets.only(
-                                                      bottom: 10),
-                                                  height: 50,
-                                                  width: 180,
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                            offset:
-                                                                Offset(0, 3),
-                                                            blurRadius: 2,
-                                                            color: Colors
-                                                                .grey.shade400)
-                                                      ]),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Image.asset(
-                                                        'assets/google_icon.png',
-                                                        height: 25,
-                                                        width: 25,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 15,
-                                                      ),
-                                                      Text(
-                                                        'Sign in with Google',
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors
-                                                                .grey[700]),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
+                                                child: GoogleButton(),
                                               )
                                             ],
                                           )
