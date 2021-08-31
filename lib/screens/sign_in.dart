@@ -15,6 +15,7 @@ class _SignInState extends State<SignIn> {
     return _loading
         ? SafeArea(
             child: Scaffold(
+              backgroundColor: Color(0xffecfddb),
               body: Center(
                 child: Stack(
                   alignment: Alignment.center,
@@ -24,9 +25,13 @@ class _SignInState extends State<SignIn> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('NURTURE'),
+                          Text(
+                            'NURTURE',
+                            style: TextStyle(
+                                fontSize: 40, fontFamily: 'MazzardBold'),
+                          ),
                           SizedBox(
-                            height: 20,
+                            height: 100,
                           ),
                           GoogleButton(),
                           SizedBox(
@@ -39,7 +44,10 @@ class _SignInState extends State<SignIn> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.orange),
                                 onPressed: () {},
-                                child: Text('Sign in as Guest'),
+                                child: Text('Sign in as Guest',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontFamily: 'MazzardBold')),
                               ),
                             ],
                           )
@@ -57,13 +65,16 @@ class _SignInState extends State<SignIn> {
           )
         : SafeArea(
             child: Scaffold(
+              backgroundColor: Color(0xffecfddb),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('NURTURE'),
+                    Text('NURTURE',
+                        style:
+                            TextStyle(fontSize: 40, fontFamily: 'MazzardBold')),
                     SizedBox(
-                      height: 20,
+                      height: 100,
                     ),
                     GestureDetector(
                       onTap: () async {

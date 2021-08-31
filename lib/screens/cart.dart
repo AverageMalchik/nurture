@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/UI/ui.dart';
@@ -26,8 +25,6 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
   Map<String, dynamic> map = {};
 
   double _opacity = 0.0;
-
-  bool _guest = false;
 
   @override
   void initState() {
@@ -133,8 +130,6 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final database = Provider.of<DatabaseService>(context, listen: false);
     final cart = Provider.of<CartModel>(context, listen: false);
-    final user = Provider.of<User>(context, listen: false);
-    _guest = user.isAnonymous ? true : false;
     return SafeArea(
         child: Scaffold(
       backgroundColor: Color(0xffebeaef),
@@ -201,7 +196,6 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                       ),
                       Consumer<CartModel>(
                         builder: (context, model, child) {
-                          print('consumer-builder-1');
                           int items = 0;
                           for (var plantL in model.plantLites)
                             items += plantL.count;
@@ -212,7 +206,6 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                         width: 10,
                       ),
                       Consumer<CartModel>(builder: (context, model, child) {
-                        print('consumer-builder-2');
                         int sum = 0;
                         for (var plantL in model.plantLites)
                           sum += plantL.plant.pricing * plantL.count;
@@ -356,19 +349,25 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                   SizedBox(
                     height: 15,
                   ),
-                  //Put Consumer here
-                  TextButton(
-                      onPressed: () async {
-                        context.loaderOverlay.show();
-                        cart.removeAll();
-                        await database.clearCart();
-                        context.loaderOverlay.hide();
-                      },
-                      child: Text(
-                        'Clear Cart',
-                        style: TextStyle(
-                            fontSize: 12, color: Colors.grey.shade400),
-                      ))
+                  Consumer<CartModel>(builder: (context, model, child) {
+                    int items = 0;
+                    for (var plantL in model.plantLites) items += plantL.count;
+                    if (items == 0)
+                      return SizedBox();
+                    else
+                      return TextButton(
+                          onPressed: () async {
+                            context.loaderOverlay.show();
+                            cart.removeAll();
+                            await database.clearCart();
+                            context.loaderOverlay.hide();
+                          },
+                          child: Text(
+                            'Clear Cart',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade400),
+                          ));
+                  })
                 ],
               ),
             ),

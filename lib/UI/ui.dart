@@ -288,7 +288,10 @@ class GoogleButton extends StatelessWidget {
           ),
           Text(
             'Sign in with Google',
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+            style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[700],
+                fontFamily: 'MazzardLight'),
           )
         ],
       ),

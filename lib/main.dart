@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/screens/my_plants.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/wrapper.dart';
