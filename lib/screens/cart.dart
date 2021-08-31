@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/UI/ui.dart';
@@ -25,6 +26,8 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
   Map<String, dynamic> map = {};
 
   double _opacity = 0.0;
+
+  bool _guest = false;
 
   @override
   void initState() {
@@ -130,6 +133,8 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final database = Provider.of<DatabaseService>(context, listen: false);
     final cart = Provider.of<CartModel>(context, listen: false);
+    final user = Provider.of<User>(context, listen: false);
+    _guest = user.isAnonymous ? true : false;
     return SafeArea(
         child: Scaffold(
       backgroundColor: Color(0xffebeaef),
@@ -261,17 +266,92 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                         ),
                       ),
                       GestureDetector(
-                        onLongPress: () {
-                          _placeOrder.forward();
-                        },
-                        onLongPressUp: () async {
-                          if (!_placeOrder.isCompleted)
-                            _placeOrder.reverse();
-                          else {
-                            await cart.resetCache(context, widget.initialCount);
-                            await _next(context);
-                          }
-                        },
+                        onLongPress: !_guest
+                            ? () {
+                                _placeOrder.forward();
+                              }
+                            : () {},
+                        onLongPressUp: !_guest
+                            ? () async {
+                                if (!_placeOrder.isCompleted)
+                                  _placeOrder.reverse();
+                                else {
+                                  await cart.resetCache(
+                                      context, widget.initialCount);
+                                  await _next(context);
+                                }
+                              }
+                            : () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title:
+                                            Icon(Icons.warning_amber_rounded),
+                                        content: Text(
+                                            'Please sign in to place your order'),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  Navigator.pop(context);
+                                                  loadingOverlay(context);
+                                                  cart.removeAll();
+                                                  await DatabaseService(
+                                                          uid: user.uid)
+                                                      .transferData(context);
+                                                },
+                                                child: Container(
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 10),
+                                                  height: 50,
+                                                  width: 180,
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            offset:
+                                                                Offset(0, 3),
+                                                            blurRadius: 2,
+                                                            color: Colors
+                                                                .grey.shade400)
+                                                      ]),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/google_icon.png',
+                                                        height: 25,
+                                                        width: 25,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 15,
+                                                      ),
+                                                      Text(
+                                                        'Sign in with Google',
+                                                        style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors
+                                                                .grey[700]),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      );
+                                    });
+                              },
                         child: AnimatedBuilder(
                           animation: _placeOrder.view,
                           builder: (context, child) {

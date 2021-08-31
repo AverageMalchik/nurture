@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:nurture/services/authentication.dart';
 
 class SignIn extends StatefulWidget {
@@ -28,9 +27,36 @@ class _SignInState extends State<SignIn> {
                           SizedBox(
                             height: 20,
                           ),
-                          SignInButton(
-                            Buttons.Google,
-                            onPressed: () {},
+                          Container(
+                            height: 50,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                      offset: Offset(0, 3),
+                                      blurRadius: 2,
+                                      color: Colors.grey.shade400)
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/google_icon.png',
+                                  height: 25,
+                                  width: 25,
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  'Sign in with Google',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey[700]),
+                                )
+                              ],
+                            ),
                           ),
                           SizedBox(
                             height: 20,
@@ -68,14 +94,44 @@ class _SignInState extends State<SignIn> {
                     SizedBox(
                       height: 20,
                     ),
-                    SignInButton(
-                      Buttons.Google,
-                      onPressed: () async {
+                    GestureDetector(
+                      onTap: () async {
                         setState(() {
                           _loading = true;
                         });
                         await _auth.signInGoogle();
                       },
+                      child: Container(
+                        height: 50,
+                        width: 180,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                  offset: Offset(0, 3),
+                                  blurRadius: 2,
+                                  color: Colors.grey.shade400)
+                            ]),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/google_icon.png',
+                              height: 25,
+                              width: 25,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[700]),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(
                       height: 20,
@@ -105,7 +161,7 @@ class _SignInState extends State<SignIn> {
                                               _loading = true;
                                             });
                                             Navigator.pop(context, 'OK');
-                                            await _auth.signInasGuest();
+                                            await _auth.signInAnonymously();
                                           },
                                           child: Text('OK'))
                                     ],

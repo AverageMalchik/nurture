@@ -96,7 +96,7 @@ class _ListFavoritesState extends State<ListFavorites>
               highlightColor: Colors.white38,
             );
           } else {
-            if (snapshot.data!.data()!.isNotEmpty) {
+            if (snapshot.data!.exists && snapshot.hasData) {
               var _list = snapshot.data!.data()!.keys.toList();
               return StaggeredGridView.countBuilder(
                   staggeredTileBuilder: (index) =>

@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/services/authentication.dart';
+import 'package:provider/provider.dart';
 
 class DatabaseService {
   final String? uid;
@@ -10,6 +14,59 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('users');
   final CollectionReference plantsCollection =
       FirebaseFirestore.instance.collection('plants');
+  final auth = FirebaseAuth.instance;
+
+  //set profile for Anonymous User
+  Future<void> setAnonymousProfile() async {
+    try {
+      await addDisplayName(UserNameReference('Guest'));
+      await addPhotoURL(UserPhotoReference(
+          'https://media.tarkett-image.com/large/TH_24567080_24594080_24596080_24601080_24563080_24565080_24588080_001.jpg'));
+    } catch (err) {
+      print(err.toString());
+    }
+  }
+
+  //transfer anonymous data
+  Future<void> transferData(BuildContext context) async {
+    final favoritesSnapshot = await usersCollection
+        .doc(uid)
+        .collection('actions')
+        .doc('favorites')
+        .get();
+    final cartSnapshot =
+        await usersCollection.doc(uid).collection('actions').doc('cart').get();
+    await usersCollection.doc(uid).delete();
+    await auth.currentUser!.delete();
+    await AuthenticationService().signInGoogle();
+    print('current: ${auth.currentUser!.uid}');
+    await usersCollection
+        .doc(auth.currentUser!.uid)
+        .collection('actions')
+        .doc('favorites')
+        .set(favoritesSnapshot.data() ?? {}, SetOptions(merge: true));
+    await usersCollection
+        .doc(auth.currentUser!.uid)
+        .collection('actions')
+        .doc('cart')
+        .set(cartSnapshot.data() ?? {}, SetOptions(merge: true));
+  }
+
+  // Future<void> setTransferData(
+  //     Map<String, dynamic> favourites, Map<String, dynamic> cart) async {
+  //   print('google uid: $uid');
+  //   await usersCollection
+  //       .doc(uid)
+  //       .collection('actions')
+  //       .doc('favorites')
+  //       .set(favourites, SetOptions(merge: true));
+  //   await usersCollection
+  //       .doc(uid)
+  //       .collection('actions')
+  //       .doc('cart')
+  //       .set(cart, SetOptions(merge: true));
+  // }
+
   //to check if displayName already exists
   Future checkDisplayName(String check) async {
     bool? _checker;
