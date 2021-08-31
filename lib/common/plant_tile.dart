@@ -20,7 +20,6 @@ class PlantTile extends StatefulWidget {
 class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
   late Image _coverImage;
   bool _loading = true;
-  bool _loadingCount = true;
   bool _focused = false;
   int _count = 0;
   late bool _inStock;

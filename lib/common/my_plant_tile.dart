@@ -3,8 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/screens/my_plants.dart';
-import 'package:nurture/services/database.dart';
-import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class MyPlantTile extends StatefulWidget {
@@ -127,6 +125,7 @@ class _MyPlantTileState extends State<MyPlantTile>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     print('inside my_plant_tile build');
     final inherited = MyInheritedList.of(context);
