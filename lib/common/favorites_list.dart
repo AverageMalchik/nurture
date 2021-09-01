@@ -83,104 +83,130 @@ class _ListFavoritesState extends State<ListFavorites>
     final database = Provider.of<DatabaseService>(context, listen: false);
     final plants = Provider.of<List<PlantReference>>(context, listen: true);
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: database.getFavorites(),
-        builder: (context, snapshot) {
-          _entry.reset();
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Shimmer.fromColors(
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              baseColor: Colors.white,
-              highlightColor: Colors.white38,
-            );
-          } else {
-            if (snapshot.data!.exists && snapshot.hasData) {
-              var _list = snapshot.data!.data()!.keys.toList();
-              return StaggeredGridView.countBuilder(
-                  staggeredTileBuilder: (index) =>
-                      StaggeredTile.count(1, index == 0 ? 0.5 : 1),
-                  crossAxisCount: 2,
-                  itemCount: 2 + _list.length,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Container(
+      stream: database.getFavorites(),
+      builder: (context, snapshot) {
+        _entry.reset();
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Shimmer.fromColors(
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            baseColor: Colors.white,
+            highlightColor: Colors.white38,
+          );
+        } else {
+          if (snapshot.data!.exists &&
+              snapshot.hasData &&
+              snapshot.data!.data()!.length != 0) {
+            var _list = snapshot.data!.data()!.keys.toList();
+            return StaggeredGridView.countBuilder(
+                staggeredTileBuilder: (index) =>
+                    StaggeredTile.count(1, index == 0 ? 0.5 : 1),
+                crossAxisCount: 2,
+                itemCount: 2 + _list.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return Container(
+                        alignment: Alignment.center,
+                        width: 300,
+                        height: 150,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 60,
+                            ),
+                            Text(
+                              'Found ${_list.length} items.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'MazzardBold',
+                                color: Colors.black,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ));
+                  } else if (index == 1 + _list.length) {
+                    return DragTarget<PlantReference>(onLeave: (_) {
+                      _shaker.forward();
+                      _controller.reverse();
+                    }, onWillAccept: (_) {
+                      _shaker.forward();
+                      _controller.forward();
+                      return true;
+                    }, onAccept: (plant) async {
+                      _controller.reverse();
+                      await database
+                          .removeFavorites(UserFavoriteAction(id: plant.id));
+                    }, builder: (context, _, __) {
+                      return AnimatedBuilder(
+                        animation: _controller.view,
+                        child: Container(
                           alignment: Alignment.center,
                           width: 300,
-                          height: 150,
-                          child: Text('Found ${_list.length} items'));
-                    } else if (index == 1 + _list.length) {
-                      return DragTarget<PlantReference>(onLeave: (_) {
-                        _shaker.forward();
-                        _controller.reverse();
-                      }, onWillAccept: (_) {
-                        _shaker.forward();
-                        _controller.forward();
-                        return true;
-                      }, onAccept: (plant) async {
-                        _controller.reverse();
-                        await database
-                            .removeFavorites(UserFavoriteAction(id: plant.id));
-                      }, builder: (context, _, __) {
-                        return AnimatedBuilder(
-                          animation: _controller.view,
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 300,
-                            height: 300,
-                            margin: EdgeInsets.all(40),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.indigo.shade600),
-                            child: Icon(
-                              Icons.delete_outline_rounded,
-                              color: Colors.white,
-                              size: 100,
-                            ),
+                          height: 300,
+                          margin: EdgeInsets.all(40),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.indigo.shade600),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            color: Colors.white,
+                            size: 100,
                           ),
-                          builder: (context, child) {
-                            return SlideTransition(
-                              position: _animateShake,
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: 300,
-                                height: 300,
-                                margin: _animateSize.value,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: _animateColor.value),
-                                child: Icon(
-                                  Icons.delete_outline_rounded,
-                                  color: Colors.white,
-                                  size: 100,
-                                ),
+                        ),
+                        builder: (context, child) {
+                          return SlideTransition(
+                            position: _animateShake,
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 300,
+                              height: 300,
+                              margin: _animateSize.value,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: _animateColor.value),
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.white,
+                                size: 100,
                               ),
-                            );
-                          },
-                        );
-                      });
-                    } else {
-                      for (int i = 0; i < plants.length; i++) {
-                        if (plants[i].id == _list[index - 1]) {
-                          _plantIndex = i;
-                          break;
-                        }
-                      }
-                      _entry.forward();
-                      return FavoriteTile(
-                        plant: plants[_plantIndex],
-                        key: ValueKey(plants[_plantIndex].id),
+                            ),
+                          );
+                        },
                       );
+                    });
+                  } else {
+                    for (int i = 0; i < plants.length; i++) {
+                      if (plants[i].id == _list[index - 1]) {
+                        _plantIndex = i;
+                        break;
+                      }
                     }
-                  });
-            } else {
-              return Center(
-                child: Text('No favorites added'),
-              );
-            }
+                    _entry.forward();
+                    return FavoriteTile(
+                      plant: plants[_plantIndex],
+                      key: ValueKey(plants[_plantIndex].id),
+                    );
+                  }
+                });
+          } else {
+            return Center(
+              child: Text(
+                'No favorites added.',
+                style: TextStyle(
+                  fontFamily: 'MazzardBold',
+                  fontSize: 25,
+                  letterSpacing: 1,
+                ),
+              ),
+            );
           }
-        });
+        }
+      },
+    );
   }
 }

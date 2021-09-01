@@ -46,8 +46,10 @@ class _SignInState extends State<SignIn> {
                                 onPressed: () {},
                                 child: Text('Sign in as Guest',
                                     style: TextStyle(
-                                        fontSize: 12,
-                                        fontFamily: 'MazzardBold')),
+                                      fontSize: 12,
+                                      fontFamily: 'MazzardBold',
+                                      fontWeight: FontWeight.w900,
+                                    )),
                               ),
                             ],
                           )
@@ -70,9 +72,13 @@ class _SignInState extends State<SignIn> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('NURTURE',
-                        style:
-                            TextStyle(fontSize: 40, fontFamily: 'MazzardBold')),
+                    Text(
+                      'NURTURE',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: 'MazzardBold',
+                      ),
+                    ),
                     SizedBox(
                       height: 100,
                     ),
@@ -83,37 +89,7 @@ class _SignInState extends State<SignIn> {
                         });
                         await _auth.signInGoogle();
                       },
-                      child: Container(
-                        height: 50,
-                        width: 180,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            boxShadow: [
-                              BoxShadow(
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  color: Colors.grey.shade400)
-                            ]),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/google_icon.png',
-                              height: 25,
-                              width: 25,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              'Sign in with Google',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey[700]),
-                            )
-                          ],
-                        ),
-                      ),
+                      child: GoogleButton(),
                     ),
                     SizedBox(
                       height: 20,
@@ -131,26 +107,50 @@ class _SignInState extends State<SignIn> {
                                   return AlertDialog(
                                     title: Icon(Icons.warning_amber_rounded),
                                     content: Text(
-                                        'Some critical features might be disabled'),
+                                      'Some critical features might be disabled',
+                                      style:
+                                          TextStyle(fontFamily: 'InterMedium'),
+                                    ),
                                     actions: [
                                       TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Cancel'),
-                                          child: Text('Cancel')),
+                                        onPressed: () => Navigator.pop(
+                                          context,
+                                          'Cancel',
+                                        ),
+                                        child: Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'InterMedium'),
+                                        ),
+                                      ),
                                       TextButton(
-                                          onPressed: () async {
-                                            setState(() {
-                                              _loading = true;
-                                            });
-                                            Navigator.pop(context, 'OK');
-                                            await _auth.signInAnonymously();
-                                          },
-                                          child: Text('OK'))
+                                        onPressed: () async {
+                                          setState(() {
+                                            _loading = true;
+                                          });
+                                          Navigator.pop(context, 'OK');
+                                          await _auth.signInAnonymously();
+                                        },
+                                        child: Text(
+                                          'OK',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'InterMedium'),
+                                        ),
+                                      )
                                     ],
                                   );
                                 });
                           },
-                          child: Text('Sign in as Guest'),
+                          child: Text(
+                            'Sign in as Guest',
+                            style: TextStyle(
+                              fontFamily: 'MazzardLight',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                         ),
                       ],
                     )

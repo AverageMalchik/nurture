@@ -26,10 +26,17 @@ class _MyPlantsWrapperState extends State<MyPlantsWrapper> {
         } else if (snapshot.connectionState == ConnectionState.done) {
           if (!snapshot.hasData || snapshot.data!.length == 0) {
             return Center(
-                child: Text(
-              'No plants have been added.',
-              style: TextStyle(color: Colors.white),
-            ));
+              child: Text(
+                'No plants have been added.',
+                style: TextStyle(
+                  fontFamily: 'MazzardBold',
+                  fontSize: 25,
+                  letterSpacing: 1,
+                  color: Colors.yellow,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
           } else {
             return MyPlantsList(listMyPlant: snapshot.data!);
           }

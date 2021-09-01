@@ -151,7 +151,8 @@ class _FavoriteTileState extends State<FavoriteTile>
                       PageRouteBuilder(
                           transitionDuration: Duration(milliseconds: 2000),
                           pageBuilder: (context, _, __) {
-                            return HeroPlant(count: 0, plant: widget.plant);
+                            return HeroPlant(
+                                cart: false, count: 0, plant: widget.plant);
                           }));
                 },
                 child: Container(

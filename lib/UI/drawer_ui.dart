@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nurture/UI/ui.dart';
 import 'package:nurture/models/user.dart';
 import 'package:nurture/screens/favorites.dart';
 import 'package:nurture/screens/home.dart';
+import 'package:nurture/screens/my_plants.dart';
 import 'package:nurture/screens/profile.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/services/database.dart';
@@ -18,69 +22,191 @@ class _DrawerUIState extends State<DrawerUI> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: false);
     return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DrawerHeader(
-            margin: EdgeInsets.all(0),
-            padding: EdgeInsets.all(0),
-            decoration: BoxDecoration(color: Colors.cyan),
-            child: Row(
+      child: Container(
+        padding: EdgeInsets.only(left: 20),
+        decoration: BoxDecoration(
+          color: Color(0xff333333),
+          borderRadius: BorderRadius.horizontal(
+            left: Radius.zero,
+            right: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DrawerHeader(
+              margin: EdgeInsets.fromLTRB(0, 20, 20, 20),
+              padding: EdgeInsets.all(0),
+              decoration: BoxDecoration(
+                color: Color(0xff292929),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 25,
+                  ),
+                  _showAvatar(context),
+                  SizedBox(
+                    width: 25,
+                  ),
+                  _showDisplayName(context)
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Row(
               children: [
                 SizedBox(
-                  width: 25,
+                  width: 20,
                 ),
-                _showAvatar(context),
+                MenuIcon(baseColor: Colors.green),
                 SizedBox(
-                  width: 25,
+                  width: 10,
                 ),
-                _showDisplayName(context)
+                TextButton(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => RootWidget())),
+                  child: Text(
+                    'My Plants',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontFamily: 'MazzardBold',
+                      fontSize: 20,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                )
               ],
             ),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              Navigator.popAndPushNamed(context, '/myplants');
-            },
-            label: Text('My Plants'),
-            icon: Icon(Icons.wallet_giftcard),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => Home())),
-            label: Text('Home'),
-            icon: Icon(Icons.home_rounded),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => Profile())),
-            label: Text('Profile'),
-            icon: Icon(Icons.person),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => Favorites())),
-            label: Text('Favourites'),
-            icon: Icon(
-              Icons.favorite_rounded,
-              color: Colors.red,
+            SizedBox(
+              height: 40,
             ),
-          ),
-          TextButton(
-              onPressed: !user.isAnonymous
-                  ? () async {
-                      await AuthenticationService().signOut();
-                    }
-                  : () async {
-                      user.delete();
-                    },
-              child: Text('Sign Out')),
-          SizedBox(
-            height: 20,
-          ),
-          IconButton(
-              onPressed: () => Navigator.pop(context), icon: Icon(Icons.close))
-        ],
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                MenuIcon(baseColor: Colors.orange),
+                SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => Home())),
+                  child: Text(
+                    'Home',
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontFamily: 'MazzardBold',
+                      fontSize: 20,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                MenuIcon(baseColor: Colors.red),
+                SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Favorites())),
+                  child: Text(
+                    'Favorites',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontFamily: 'MazzardBold',
+                      fontSize: 20,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                MenuIcon(baseColor: Colors.blue),
+                SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.popAndPushNamed(context, '/profile');
+                  },
+                  child: Text(
+                    'Profile',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontFamily: 'MazzardBold',
+                      fontSize: 20,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                MenuIcon(baseColor: Colors.black),
+                SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  onPressed: !user.isAnonymous
+                      ? () async {
+                          await AuthenticationService().signOut();
+                        }
+                      : () async {
+                          user.delete();
+                        },
+                  child: Text(
+                    'Sign Out',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'MazzardBold',
+                      fontSize: 20,
+                      letterSpacing: 1,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(-2, 2),
+                          blurRadius: 1,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -95,7 +221,7 @@ class _DrawerUIState extends State<DrawerUI> {
           else {
             final photoReference = snapshot.data;
             return CircleAvatar(
-              radius: 40,
+              radius: 60,
               backgroundImage: NetworkImage(photoReference!.photoURL),
               backgroundColor: Colors.transparent,
             );
@@ -112,7 +238,18 @@ class _DrawerUIState extends State<DrawerUI> {
             return SizedBox();
           else {
             final displayNameReference = snapshot.data;
-            return Text(displayNameReference!.displayName);
+            return Wrap(
+              children: [
+                Text(
+                  displayNameReference!.displayName,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontFamily: 'MazzardBold',
+                      letterSpacing: 1),
+                ),
+              ],
+            );
           }
         });
   }

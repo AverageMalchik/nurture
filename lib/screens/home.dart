@@ -11,16 +11,16 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _scaffold = GlobalKey<ScaffoldState>();
 
+  void close() {
+    _scaffold.currentState!.openEndDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xffebeaef),
         appBar: AppBar(
-          title: Text(
-            'Home',
-            style: TextStyle(color: Colors.black),
-          ),
           leading: IconButton(
             icon: Icon(
               Icons.menu,
@@ -40,6 +40,18 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(
             children: [
+              Text(
+                'Home.',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontFamily: 'MazzardExtraBold',
+                  fontSize: 70,
+                  letterSpacing: 2,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               ListPlants(),
             ],
           ),

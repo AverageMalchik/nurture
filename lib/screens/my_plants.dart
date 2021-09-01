@@ -90,6 +90,10 @@ class MyPlants extends StatefulWidget {
 class _MyPlantsState extends State<MyPlants> {
   final _scaffold = GlobalKey<ScaffoldState>();
 
+  void close() {
+    _scaffold.currentState!.openEndDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
     final inherited = MyInheritedList.of(context);
@@ -99,9 +103,15 @@ class _MyPlantsState extends State<MyPlants> {
         drawer: DrawerUI(),
         backgroundColor: Color(0xff000a12),
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
-            'My Plants',
-            style: TextStyle(color: Colors.white),
+            'My Plants.',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'MazzardBold',
+              fontSize: 30,
+              letterSpacing: 1,
+            ),
             textAlign: TextAlign.center,
           ),
           leading: IconButton(
