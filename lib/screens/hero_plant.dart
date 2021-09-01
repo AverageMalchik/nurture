@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nurture/UI/ui.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/screens/cart.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HeroPlant extends StatefulWidget {
+  final bool cart;
   final PlantReference plant;
   final int count;
   HeroPlant({
+    required this.cart,
     required this.count,
     required this.plant,
   });
@@ -81,15 +85,18 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
       key: _scaffold,
       backgroundColor: Color(0xffebe9ec),
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black,
+        leading: Opacity(
+          opacity: widget.cart ? 0.0 : 1.0,
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              _entry.reverse();
+              if (!widget.cart) Navigator.pop(context);
+            },
           ),
-          onPressed: () {
-            _entry.reverse();
-            Navigator.pop(context);
-          },
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -133,7 +140,9 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
                                     width: 400,
                                     child: _inStock
                                         ? Hero(
-                                            tag: 'hero${widget.plant.cover}',
+                                            tag: !widget.cart
+                                                ? 'hero${widget.plant.cover}'
+                                                : 'hero${widget.plant.secondary}',
                                             child: Image.network(
                                               widget.plant.cover,
                                               fit: BoxFit.contain,
@@ -254,7 +263,7 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
             collapsed: FadeTransition(
               opacity: _page,
               child: Container(
-                padding: EdgeInsets.fromLTRB(30, 35, 30, 20),
+                padding: EdgeInsets.fromLTRB(30, 35, 30, 15),
                 height: 200,
                 decoration: BoxDecoration(
                     color: Colors.blueGrey.shade300,
@@ -266,12 +275,28 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
                   children: [
                     Text(
                       widget.plant.name,
-                      style: TextStyle(fontSize: 30, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.blueGrey.shade300,
+                        fontFamily: 'MazzardBold',
+                        shadows: [
+                          Shadow(
+                            offset: Offset(-2, 2),
+                            color: Colors.blueGrey,
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 5),
                     Text(
                       widget.plant.category,
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white,
+                        fontFamily: 'MazzardLight',
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
                     ),
                     SizedBox(
                       height: 15,
@@ -280,138 +305,163 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.plant.pricing.toString(),
-                          style: TextStyle(fontSize: 30, color: Colors.black),
+                          '\$${widget.plant.pricing.toString()}',
+                          style: TextStyle(
+                            fontSize: 55,
+                            color: Colors.black,
+                            letterSpacing: 1,
+                            fontFamily: 'MazzardBold',
+                            shadows: [
+                              Shadow(
+                                offset: Offset(-3, 3),
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Opacity(
-                            opacity: _inStock ? 0.0 : 1.0,
-                            child: Text(
-                              'Out of Stock!',
-                              style: TextStyle(color: Colors.red, fontSize: 12),
-                            )),
                         Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            StreamBuilder<int>(
-                                stream: _countController.stream,
-                                builder: (context, snapshot) {
-                                  _count = snapshot.data ?? 0;
-                                  return Container(
-                                    alignment: Alignment.centerLeft,
-                                    height: 35,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        border: Border.all(color: Colors.white),
-                                        borderRadius:
-                                            BorderRadius.circular(35)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            _countController
-                                                .add(snapshot.data! - 1);
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                shape: BoxShape.circle),
-                                            child: Text(
-                                              '-',
-                                              style: TextStyle(
+                            child: Opacity(
+                          opacity: _inStock ? 1.0 : 0.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              StreamBuilder<int>(
+                                  stream: _countController.stream,
+                                  builder: (context, snapshot) {
+                                    _count = snapshot.data ?? 0;
+                                    return Container(
+                                      alignment: Alignment.centerLeft,
+                                      height: 35,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          border:
+                                              Border.all(color: Colors.white),
+                                          borderRadius:
+                                              BorderRadius.circular(35)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              _countController
+                                                  .add(snapshot.data! - 1);
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  shape: BoxShape.circle),
+                                              child: Text(
+                                                '-',
+                                                style: TextStyle(
                                                   fontSize: 26,
                                                   color: snapshot.data == 0
                                                       ? Colors.white54
-                                                      : Colors.white),
+                                                      : Colors.white,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                              shape: BoxShape.circle),
-                                          child: Text(
-                                            snapshot.data.toString(),
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            _countController
-                                                .add(snapshot.data! + 1);
-                                          },
-                                          child: Container(
+                                          Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 20),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                                 color: Colors.transparent,
                                                 shape: BoxShape.circle),
                                             child: Text(
-                                              '+',
+                                              snapshot.data.toString(),
                                               style: TextStyle(
                                                   fontSize: 14,
-                                                  color: snapshot.data != 2
-                                                      ? Colors.white
-                                                      : Colors.white54),
+                                                  color: Colors.white),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            ElevatedButton(
-                              onPressed: !_press.isAnimating
-                                  ? () async {
-                                      _press.forward();
-                                      if (_count != 0)
-                                        await database.addCart(UserCartAction(
-                                            id: widget.plant.id,
-                                            amount: _count));
-                                      else {
-                                        await database.removeCart(
-                                            UserCartAction(
-                                                id: widget.plant.id));
-                                      }
-                                      _press.reverse();
-                                    }
-                                  : () {},
-                              child: Text(
-                                'Cart',
-                                style: TextStyle(color: Colors.white),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _countController
+                                                  .add(snapshot.data! + 1);
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  shape: BoxShape.circle),
+                                              child: Text(
+                                                '+',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: snapshot.data != 2
+                                                        ? Colors.white
+                                                        : Colors.white54),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                              SizedBox(
+                                width: 20,
                               ),
-                              style: ElevatedButton.styleFrom(
-                                fixedSize: Size.fromHeight(40),
-                                primary: _color.value,
+                              ElevatedButton(
+                                onPressed: !_press.isAnimating
+                                    ? (_inStock
+                                        ? () async {
+                                            _press.forward();
+                                            if (_count != 0)
+                                              await database.addCart(
+                                                  UserCartAction(
+                                                      id: widget.plant.id,
+                                                      amount: _count));
+                                            else {
+                                              await database.removeCart(
+                                                  UserCartAction(
+                                                      id: widget.plant.id));
+                                            }
+                                            _press.reverse();
+                                          }
+                                        : () {})
+                                    : () {},
+                                child: Text(
+                                  'Cart',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: Size.fromHeight(40),
+                                  primary: _color.value,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ))
                       ],
-                    )
+                    ),
+                    Opacity(
+                      opacity: _inStock ? 0.0 : 1.0,
+                      child: Text(
+                        'Out of Stock!',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontFamily: 'MazzardLight',
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             panelBuilder: (scrollController) {
               return FadeTransition(
-                  opacity: _page,
-                  child: _slidingPanel(
-                      context, scrollController, _panelController));
+                opacity: _page,
+                child: _slidingPanel(
+                  context,
+                  scrollController,
+                  _panelController,
+                ),
+              );
             },
             onPanelOpened: () => _description.forward(),
             onPanelClosed: () => _description.reverse(),
@@ -427,21 +477,34 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
     return Container(
       padding: EdgeInsets.fromLTRB(30, 35, 30, 20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(40), topRight: Radius.circular(40))),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             widget.plant.name,
-            style: TextStyle(fontSize: 30, color: Colors.black),
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+              fontFamily: 'MazzardBold',
+            ),
           ),
           SizedBox(
             height: 5,
           ),
           Text(
             widget.plant.category,
-            style: TextStyle(fontSize: 18, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey,
+              fontFamily: 'MazzardLight',
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+            ),
           ),
           SizedBox(
             height: 30,
@@ -450,7 +513,10 @@ class _HeroPlantState extends State<HeroPlant> with TickerProviderStateMixin {
               opacity: _opacity,
               child: Text(
                 widget.plant.description,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'InterMedium',
+                ),
               ))
         ],
       ),

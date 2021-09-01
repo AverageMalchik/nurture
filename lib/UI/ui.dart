@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +14,17 @@ import 'dart:convert' as convert;
 
 Widget loadingShimmer() {
   return Shimmer.fromColors(
-      child: Container(
-        margin: EdgeInsets.all(10),
-        height: 300,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: Colors.black),
+    child: Container(
+      margin: EdgeInsets.all(10),
+      height: 300,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xffebeaef),
       ),
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade200);
+    ),
+    baseColor: Colors.grey.shade300,
+    highlightColor: Colors.grey.shade200,
+  );
 }
 
 class CartIcon extends StatefulWidget {
@@ -233,7 +238,32 @@ class RoundFeatures extends StatelessWidget {
   final int index;
   final String feature;
   RoundFeatures({required this.index, required this.feature});
-  final listIcons = [Icons.place, Icons.ac_unit, Icons.accessibility];
+  final listImages = [
+    Positioned(
+      top: -20,
+      child: Image.asset(
+        'assets/water.png',
+        height: 100,
+        width: 100,
+      ),
+    ),
+    Positioned(
+      top: 7,
+      child: Image.asset(
+        'assets/care.png',
+        height: 50,
+        width: 50,
+      ),
+    ),
+    Positioned(
+      top: 5,
+      child: Image.asset(
+        'assets/sun.png',
+        height: 50,
+        width: 50,
+      ),
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -243,16 +273,37 @@ class RoundFeatures extends StatelessWidget {
       height: 100,
       width: 100,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[200],
         borderRadius: BorderRadius.circular(30),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(listIcons[index]),
-          Text(
-            feature,
-            style: TextStyle(fontSize: 12),
+          listImages[index],
+          Positioned(
+            bottom: 10,
+            child: Text(
+              feature,
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'MazzardLight',
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+                color: Colors.grey[200],
+                shadows: [
+                  Shadow(
+                    color: Colors.white,
+                    blurRadius: 1,
+                    offset: Offset(-0.5, -0.5),
+                  ),
+                  Shadow(
+                    color: Colors.black,
+                    blurRadius: 1,
+                    offset: Offset(0.5, 0.5),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -289,12 +340,130 @@ class GoogleButton extends StatelessWidget {
           Text(
             'Sign in with Google',
             style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-                fontFamily: 'MazzardLight'),
+              fontSize: 12,
+              color: Colors.grey[700],
+              fontFamily: 'MazzardLight',
+              fontWeight: FontWeight.w900,
+            ),
           )
         ],
       ),
     );
   }
 }
+
+class MenuIcon extends StatefulWidget {
+  final Color baseColor;
+  MenuIcon({required this.baseColor});
+  @override
+  _MenuIconState createState() => _MenuIconState();
+}
+
+class _MenuIconState extends State<MenuIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _icon;
+  // late Animation _gradient;
+
+  @override
+  void initState() {
+    _icon = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 2000));
+    _icon.forward();
+    _icon.repeat(reverse: false);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _icon.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _icon.view,
+      child: SizedBox(),
+      builder: (context, child) {
+        return RotationTransition(
+            turns: _icon.view,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  width: 40,
+                  // margin: EdgeInsets.fromLTRB(20, 20, 10, 20),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          // _chooseBaseColor(widget.baseColor),
+                          _chooseBaseColor(widget.baseColor),
+                          _chooseBaseColor(widget.baseColor),
+                          _chooseDarkColor(widget.baseColor),
+                        ]),
+                  ),
+                ),
+                Container(
+                  height: 32,
+                  width: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xff333333),
+                  ),
+                ),
+              ],
+            ));
+      },
+    );
+  }
+
+  Color _chooseBaseColor(Color baseColor) {
+    if (baseColor == Colors.green) {
+      return Colors.lightGreen;
+    } else if (baseColor == Colors.black) {
+      return Colors.black26;
+    } else if (baseColor == Colors.orange) {
+      return Colors.orange.shade300;
+    } else if (baseColor == Colors.blue) {
+      return Colors.blue.shade300;
+    } else {
+      return Colors.red.shade400;
+    }
+  }
+
+  Color _chooseDarkColor(Color baseColor) {
+    if (baseColor == Colors.green) {
+      return Colors.green.shade600;
+    } else if (baseColor == Colors.black) {
+      return Colors.black;
+    } else if (baseColor == Colors.orange) {
+      return Colors.orange.shade900;
+    } else if (baseColor == Colors.blue) {
+      return Colors.blue.shade900;
+    } else {
+      return Colors.red.shade900;
+    }
+  }
+}
+
+const textInputDecoration = InputDecoration(
+  isDense: true,
+  contentPadding: EdgeInsets.all(20),
+  labelText: 'Username',
+  floatingLabelBehavior: FloatingLabelBehavior.always,
+  fillColor: Colors.white,
+  filled: true,
+  disabledBorder:
+      OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 2)),
+  enabledBorder:
+      OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 2)),
+  focusedBorder:
+      OutlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 2)),
+  errorBorder:
+      OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2)),
+);

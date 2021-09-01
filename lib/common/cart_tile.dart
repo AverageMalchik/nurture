@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nurture/models/cart_model.dart';
 import 'package:nurture/models/plant.dart';
 import 'package:nurture/models/user.dart';
+import 'package:nurture/screens/hero_plant.dart';
 import 'package:nurture/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -60,7 +61,7 @@ class _CartTileState extends State<CartTile> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    print('inside cart_tile initState ${widget.plant.id}');
+    print('inside cart_tile initState ${widget.plant.name}');
     _count = widget.count;
     _opacity = _count == 1 ? 1.0 : 0.5;
     _controller = AnimationController(
@@ -101,139 +102,180 @@ class _CartTileState extends State<CartTile> with TickerProviderStateMixin {
     final database = Provider.of<DatabaseService>(context, listen: false);
     return Stack(
       children: [
-        Container(
-          alignment: Alignment.center,
-          height: 112,
-          width: 400,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.transparent),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 91,
-                width: 92,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(15),
+        GestureDetector(
+          onTap: () async {
+            print('tap');
+            await cart.resetCache(context, widget.count);
+            cart.removeAll();
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 2000),
+                pageBuilder: (context, _, __) {
+                  return HeroPlant(
+                    cart: true,
+                    count: _count,
+                    plant: widget.plant,
+                  );
+                },
+              ),
+            );
+          },
+          child: Container(
+            alignment: Alignment.center,
+            height: 112,
+            width: 400,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.transparent),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 91,
+                  width: 92,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 30,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.plant.name,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  Text(
-                    widget.plant.category,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  FadeTransition(
-                    opacity: _change.view,
-                    child: Text(
-                      '\$' + (widget.plant.pricing * _count).toString(),
-                      style: TextStyle(fontSize: 20),
+                SizedBox(
+                  width: 30,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.plant.name,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'MazzardLight',
+                          letterSpacing: 0.2,
+                          color: Colors.purple[700]),
                     ),
-                  )
-                ],
-              ),
-              Expanded(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                      onTap: () async {
-                        _change.reset();
-                        cart.edit(widget.plant, widget.index!, _count - 1);
-                        setState(() {
-                          _opacity = 1.0;
-                          --_count;
-                          _change.forward();
-                        });
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 24,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.transparent,
-                            border: Border.all(
-                                width: 1,
-                                color: _count == 2
-                                    ? Colors.black
-                                    : Colors.white38)),
-                        child: Icon(
-                          Icons.remove_rounded,
-                          color: _count == 2 ? Colors.black : Colors.white38,
-                          size: 18,
+                    Text(
+                      widget.plant.category,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'MazzardLight',
+                        color: Colors.black,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    FadeTransition(
+                      opacity: _change.view,
+                      child: Text(
+                        '\$' + (widget.plant.pricing * _count).toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'MazzardBold',
+                          letterSpacing: 0.5,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(2, -2),
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
-                      )),
-                  Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    height: 30,
-                    width: 35,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
-                        border: Border.all(color: Colors.black, width: 0.5)),
-                    child: IndexedStack(
+                      ),
+                    )
+                  ],
+                ),
+                Expanded(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                        onTap: () async {
+                          _change.reset();
+                          cart.edit(widget.plant, widget.index!, _count - 1);
+                          setState(() {
+                            _opacity = 1.0;
+                            --_count;
+                            _change.forward();
+                          });
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 24,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.transparent,
+                              border: Border.all(
+                                  width: 1,
+                                  color: _count == 2
+                                      ? Colors.black
+                                      : Colors.white38)),
+                          child: Icon(
+                            Icons.remove_rounded,
+                            color: _count == 2 ? Colors.black : Colors.white38,
+                            size: 18,
+                          ),
+                        )),
+                    Container(
                       alignment: Alignment.center,
-                      index: _count - 1,
-                      children: stackList,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      if (_count == 1) {
-                        _change.reset();
-
-                        cart.edit(widget.plant, widget.index!, _count + 1);
-                        setState(() {
-                          ++_count;
-                          _opacity = 0.5;
-                          _change.forward();
-                        });
-                      }
-                    },
-                    child: AnimatedOpacity(
-                      opacity: _opacity,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.ease,
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey.shade400,
-                                  offset: Offset(0, 5),
-                                  blurRadius: 3)
-                            ]),
-                        child: Icon(
-                          Icons.add_rounded,
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      height: 30,
+                      width: 35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
                           color: Colors.white,
-                          size: 18,
+                          border: Border.all(color: Colors.black, width: 0.5)),
+                      child: IndexedStack(
+                        alignment: Alignment.center,
+                        index: _count - 1,
+                        children: stackList,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        if (_count == 1) {
+                          _change.reset();
+
+                          cart.edit(widget.plant, widget.index!, _count + 1);
+                          setState(() {
+                            ++_count;
+                            _opacity = 0.5;
+                            _change.forward();
+                          });
+                        }
+                      },
+                      child: AnimatedOpacity(
+                        opacity: _opacity,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey.shade400,
+                                    offset: Offset(0, 5),
+                                    blurRadius: 3)
+                              ]),
+                          child: Icon(
+                            Icons.add_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ))
-            ],
+                  ],
+                ))
+              ],
+            ),
           ),
         ),
         Positioned(
@@ -285,11 +327,32 @@ class _CartTileState extends State<CartTile> with TickerProviderStateMixin {
                   ], borderRadius: BorderRadius.circular(15)),
                   child: ClipRRect(
                     child: GestureDetector(
-                        onHorizontalDragEnd: (details) {
-                          if (!details.primaryVelocity!.isNegative)
-                            _controller.forward();
+                      onHorizontalDragEnd: (details) {
+                        if (!details.primaryVelocity!.isNegative)
+                          _controller.forward();
+                      },
+                      child: Hero(
+                        tag: 'hero${widget.plant.secondary}',
+                        child: _leading,
+                        flightShuttleBuilder:
+                            (context, animation, direction, _, __) {
+                          if (direction == HeroFlightDirection.push) {
+                            return SizeTransition(
+                              sizeFactor: animation,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(75),
+                                child: _leading,
+                              ),
+                            );
+                          } else {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: _leading,
+                            );
+                          }
                         },
-                        child: _leading),
+                      ),
+                    ),
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),

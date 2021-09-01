@@ -86,24 +86,35 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
         context: context,
         pageBuilder: (context, animation1, animation2) {
           return Container(
-            height: 500,
+            height: 200,
             width: 300,
             child: SimpleDialog(
               title: Text(
                 'Congratulations',
-                style: TextStyle(fontSize: 20, letterSpacing: 1),
+                style: TextStyle(
+                  fontSize: 25,
+                  letterSpacing: 1,
+                  fontFamily: 'MazzardBold',
+                  color: Colors.deepPurple,
+                ),
                 textAlign: TextAlign.center,
               ),
-              titlePadding: EdgeInsets.all(15),
-              contentPadding: EdgeInsets.all(20),
+              titlePadding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+              contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               children: [
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
                       height: 50,
                     ),
-                    Text('Your order has been placed.'),
+                    Text(
+                      'Your order has been placed.',
+                      style: TextStyle(
+                        fontFamily: 'InterMedium',
+                      ),
+                    ),
                     SizedBox(
                       height: 30,
                     ),
@@ -112,7 +123,11 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                           context, MaterialPageRoute(builder: (_) => Home())),
                       child: Text(
                         'Awesome!',
-                        style: TextStyle(fontSize: 15, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontFamily: 'InterMedium',
+                        ),
                       ),
                       style:
                           ElevatedButton.styleFrom(primary: Colors.amber[800]),
@@ -138,10 +153,6 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
         child: Scaffold(
       backgroundColor: Color(0xffebeaef),
       appBar: AppBar(
-        title: Text(
-          'Cart',
-          style: TextStyle(color: Colors.black),
-        ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
@@ -152,7 +163,12 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
             await cart.resetCache(context, widget.initialCount);
             cart.removeAll();
             context.loaderOverlay.hide();
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => Home(),
+              ),
+            );
           },
         ),
         elevation: 0,
@@ -162,18 +178,29 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Text(
+            'Cart.',
+            style: TextStyle(
+              color: Colors.pink,
+              fontFamily: 'MazzardExtraBold',
+              fontSize: 40,
+              letterSpacing: 2,
+            ),
+          ),
           SizedBox(
             height: 5,
           ),
-          Container(
-              constraints: BoxConstraints(
-                maxHeight: 700,
-                maxWidth: 400,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CartWrapper(),
-              )),
+          Flexible(
+            child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: 750,
+                  maxWidth: 400,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: CartWrapper(),
+                )),
+          ),
           SizedBox(
             height: 5,
           ),
@@ -194,30 +221,56 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('Bag Total'),
+                      Text(
+                        'Bag Total',
+                        style: TextStyle(
+                          fontFamily: 'MazzardLight',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
                       SizedBox(
-                        width: 10,
+                        width: 6,
                       ),
                       Consumer<CartModel>(
                         builder: (context, model, child) {
                           int items = 0;
                           for (var plantL in model.plantLites)
                             items += plantL.count;
-                          return Text('($items items)');
+                          return Text(
+                            '($items items)',
+                            style: TextStyle(
+                              fontFamily: 'MazzardLight',
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          );
                         },
                       ),
                       SizedBox(
                         width: 10,
                       ),
-                      Consumer<CartModel>(builder: (context, model, child) {
-                        int sum = 0;
-                        for (var plantL in model.plantLites)
-                          sum += plantL.plant.pricing * plantL.count;
-                        return Text('\$' + sum.toString(),
+                      Consumer<CartModel>(
+                        builder: (context, model, child) {
+                          int sum = 0;
+                          for (var plantL in model.plantLites)
+                            sum += plantL.plant.pricing * plantL.count;
+                          return Text(
+                            '\$' + sum.toString(),
                             style: TextStyle(
                               fontSize: 20,
-                            ));
-                      }),
+                              fontFamily: 'MazzardBold',
+                              letterSpacing: 0.5,
+                              shadows: [
+                                Shadow(
+                                  offset: Offset(2, -2),
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                       SizedBox(
                         width: 20,
                       )
@@ -227,128 +280,148 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                     height: 30,
                   ),
                   //Put Consumer here
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 432,
-                      ),
-                      AnimatedBuilder(
-                        animation: _placeOrder.view,
-                        builder: (context, child) {
-                          return SlideTransition(
-                            position: _offset,
-                            child: Container(
-                              alignment: Alignment.center,
+                  Consumer<CartModel>(
+                    child: SizedBox(),
+                    builder: (context, model, child) {
+                      int items = 0;
+                      for (var plantL in model.plantLites)
+                        items += plantL.count;
+                      if (items == 0)
+                        return SizedBox();
+                      else
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
                               height: 40,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.grey)),
+                              width: 432,
                             ),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        left: 0,
-                        child: ClipPath(
-                          clipper: SWFOClipper(),
-                          child: Container(
-                            height: 40,
-                            width: 136,
-                            color: Color(0xffebeaef),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onLongPress: !_guest
-                            ? () {
-                                _placeOrder.forward();
-                              }
-                            : () {},
-                        onLongPressUp: !_guest
-                            ? () async {
-                                if (!_placeOrder.isCompleted)
-                                  _placeOrder.reverse();
-                                else {
-                                  await cart.resetCache(
-                                      context, widget.initialCount);
-                                  await _next(context);
-                                }
-                              }
-                            : () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title:
-                                            Icon(Icons.warning_amber_rounded),
-                                        content: Text(
-                                            'Please sign in to place your order'),
-                                        actions: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () async {
-                                                  Navigator.pop(context);
-                                                  loadingOverlay(context);
-                                                  cart.removeAll();
-                                                  await DatabaseService(
-                                                          uid: user.uid)
-                                                      .transferData(context);
-                                                },
-                                                child: GoogleButton(),
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      );
-                                    });
+                            AnimatedBuilder(
+                              animation: _placeOrder.view,
+                              builder: (context, child) {
+                                return SlideTransition(
+                                  position: _offset,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height: 40,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                );
                               },
-                        child: AnimatedBuilder(
-                          animation: _placeOrder.view,
-                          builder: (context, child) {
-                            return Container(
-                              alignment: Alignment.center,
-                              height: 40,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.grey)),
-                              child: Text(
-                                'PLACE ORDER',
-                                style: TextStyle(
-                                  color: _color.value,
-                                  fontSize: 17,
+                            ),
+                            Positioned(
+                              left: 0,
+                              child: ClipPath(
+                                clipper: SWFOClipper(),
+                                child: Container(
+                                  height: 41,
+                                  width: 136,
+                                  color: Color(0xffebeaef),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                      Positioned(
-                        right: 50,
-                        child: AnimatedBuilder(
-                          animation: _placeOrder.view,
-                          builder: (context, child) {
-                            return Opacity(
-                              opacity: _opacity,
-                              child: CircularProgressIndicator(
-                                color: Colors.green,
+                            ),
+                            GestureDetector(
+                              onLongPress: !_guest
+                                  ? () {
+                                      _placeOrder.forward();
+                                    }
+                                  : () {},
+                              onLongPressUp: !_guest
+                                  ? () async {
+                                      if (!_placeOrder.isCompleted)
+                                        _placeOrder.reverse();
+                                      else {
+                                        await cart.resetCache(
+                                            context, widget.initialCount);
+                                        await _next(context);
+                                      }
+                                    }
+                                  : () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Icon(
+                                                  Icons.warning_amber_rounded),
+                                              content: Text(
+                                                'Please sign in to place your order',
+                                                style: TextStyle(
+                                                  fontFamily: 'InterMedium',
+                                                ),
+                                              ),
+                                              actions: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () async {
+                                                        Navigator.pop(context);
+                                                        loadingOverlay(context);
+                                                        cart.removeAll();
+                                                        await DatabaseService(
+                                                                uid: user.uid)
+                                                            .transferData(
+                                                                context);
+                                                      },
+                                                      child: GoogleButton(),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    },
+                              child: AnimatedBuilder(
+                                animation: _placeOrder.view,
+                                builder: (context, child) {
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    height: 40,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Colors.grey)),
+                                    child: Text(
+                                      'PLACE ORDER',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: _color.value,
+                                        fontSize: 17,
+                                        fontFamily: 'MazzardLight',
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                          child: CircularProgressIndicator(
-                            color: Colors.green[600],
-                          ),
-                        ),
-                      ),
-                    ],
+                            ),
+                            Positioned(
+                              right: 50,
+                              child: AnimatedBuilder(
+                                animation: _placeOrder.view,
+                                builder: (context, child) {
+                                  return Opacity(
+                                    opacity: _opacity,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.green,
+                                    ),
+                                  );
+                                },
+                                child: CircularProgressIndicator(
+                                  color: Colors.green[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                    },
                   ),
                   SizedBox(
                     height: 15,
@@ -369,7 +442,12 @@ class _CartState extends State<Cart> with TickerProviderStateMixin {
                           child: Text(
                             'Clear Cart',
                             style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade400),
+                              fontSize: 12,
+                              color: Colors.grey,
+                              fontFamily: 'MazzardLight',
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
                           ));
                   })
                 ],

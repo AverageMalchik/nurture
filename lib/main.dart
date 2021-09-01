@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:nurture/screens/home.dart';
 import 'package:nurture/screens/my_plants.dart';
+import 'package:nurture/screens/profile.dart';
 import 'package:nurture/services/authentication.dart';
 import 'package:nurture/wrapper.dart';
 import 'package:nurture/wrapper_builder.dart';
@@ -22,8 +24,11 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             routes: {
               '/myplants': (_) => RootWidget(),
+              '/profile': (_) => Profile(),
             },
-            theme: ThemeData(accentColorBrightness: Brightness.values[0]),
+            theme: ThemeData(
+                accentColorBrightness: Brightness.values[0],
+                canvasColor: Colors.transparent),
             home: Wrapper(
               userSnapshot: snapshot,
             ),

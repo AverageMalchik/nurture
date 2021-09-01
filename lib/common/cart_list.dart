@@ -129,7 +129,14 @@ class _ListCartState extends State<ListCart>
                   maxHeight: 4 * 115,
                 ),
                 alignment: Alignment.center,
-                child: Text('Cart is empty.'),
+                child: Text(
+                  'Cart is empty.',
+                  style: TextStyle(
+                    fontFamily: 'MazzardBold',
+                    fontSize: 25,
+                    letterSpacing: 1,
+                  ),
+                ),
               ),
             );
           } else {
@@ -139,9 +146,9 @@ class _ListCartState extends State<ListCart>
                 maxHeight: 4 * 115,
               ),
               child: AnimatedList(
+                physics: BouncingScrollPhysics(),
                 key: _state,
                 itemBuilder: (context, index, animation) {
-                  print('inside AnimatedList index: $index');
                   return SlideTransition(
                     position: animation
                         .drive(_curve)

@@ -191,15 +191,25 @@ class _MyPlantTileState extends State<MyPlantTile>
             top: 200,
             child: Container(
               alignment: Alignment.center,
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white70,
               ),
               child: Text(
                 widget.myPlant.count.toString(),
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'MazzardExtraBold',
+                  color: Colors.grey[500],
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2, 2),
+                      color: Colors.grey.shade900,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -209,7 +219,11 @@ class _MyPlantTileState extends State<MyPlantTile>
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 widget.myPlant.plant.category,
-                style: TextStyle(fontSize: 15, color: Colors.green),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.lightGreen,
+                  fontFamily: 'InterMedium',
+                ),
               ),
             ),
           ),
@@ -220,7 +234,11 @@ class _MyPlantTileState extends State<MyPlantTile>
               child: Text(
                 widget.myPlant.plant.name,
                 style: TextStyle(
-                    fontSize: 25, color: Colors.white, letterSpacing: 1),
+                  fontSize: 25,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                  fontFamily: 'MazzardBold',
+                ),
               ),
             ),
           ),
@@ -230,12 +248,16 @@ class _MyPlantTileState extends State<MyPlantTile>
               padding: EdgeInsets.only(left: 20),
               child: Text(
                 'Purchased on ${DateFormat('dd/MM/yy').format(DateTime.parse(widget.myPlant.purchase))}',
-                style: TextStyle(color: Colors.greenAccent[700], fontSize: 12),
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 12,
+                  fontFamily: 'InterMedium',
+                ),
               ),
             ),
           ),
           Positioned(
-            top: 395,
+            top: 397,
             child: Padding(
               padding: EdgeInsets.only(left: 20),
               child: AnimatedBuilder(
@@ -246,7 +268,11 @@ class _MyPlantTileState extends State<MyPlantTile>
                         displayTimeElapsed(
                             DateTime.parse(inherited.list[widget.index].last)) +
                         ' ago',
-                    style: TextStyle(fontSize: 10),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.purpleAccent,
+                      fontFamily: 'InterMedium',
+                    ),
                   );
                 },
               ),
@@ -300,7 +326,6 @@ class _MyPlantTileState extends State<MyPlantTile>
                         _size.reverse();
                         return;
                       }
-                      print('2nd part');
                       due = updateTime();
                       inherited.editList(
                           widget.index,
@@ -415,15 +440,25 @@ class _MyPlantTileState extends State<MyPlantTile>
             top: 200,
             child: Container(
               alignment: Alignment.center,
-              width: 50,
-              height: 50,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white70,
               ),
               child: Text(
                 widget.myPlant.count.toString(),
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'MazzardExtraBold',
+                  color: Colors.grey[500],
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2, 2),
+                      color: Colors.grey.shade900,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -433,7 +468,11 @@ class _MyPlantTileState extends State<MyPlantTile>
               padding: const EdgeInsets.only(left: 20),
               child: Text(
                 widget.myPlant.plant.category,
-                style: TextStyle(fontSize: 15, color: Colors.white54),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[200],
+                  fontFamily: 'InterMedium',
+                ),
               ),
             ),
           ),
@@ -444,7 +483,11 @@ class _MyPlantTileState extends State<MyPlantTile>
               child: Text(
                 widget.myPlant.plant.name,
                 style: TextStyle(
-                    fontSize: 25, color: Colors.black, letterSpacing: 1),
+                  fontSize: 25,
+                  color: Colors.black,
+                  letterSpacing: 1,
+                  fontFamily: 'MazzardBold',
+                ),
               ),
             ),
           ),
@@ -454,12 +497,16 @@ class _MyPlantTileState extends State<MyPlantTile>
               padding: EdgeInsets.only(left: 20),
               child: Text(
                 'Purchased on ${DateFormat('dd/MM/yy').format(DateTime.parse(widget.myPlant.purchase))}',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                  fontFamily: 'InterMedium',
+                ),
               ),
             ),
           ),
           Positioned(
-            top: 395,
+            top: 397,
             child: Padding(
               padding: EdgeInsets.only(left: 20),
               child: AnimatedBuilder(
@@ -470,7 +517,11 @@ class _MyPlantTileState extends State<MyPlantTile>
                         displayTimeElapsed(
                             DateTime.parse(inherited.list[widget.index].last)) +
                         ' ago',
-                    style: TextStyle(fontSize: 10, color: Colors.red),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.red,
+                      fontFamily: 'InterMedium',
+                    ),
                   );
                 },
               ),

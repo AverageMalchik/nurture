@@ -124,20 +124,16 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
             height: 300,
             margin: EdgeInsets.all(10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey.shade300,
-                      offset: Offset(0, 3),
-                      blurRadius: 1),
-                ]),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: GestureDetector(
               onTap: () => Navigator.push(
                   context,
                   PageRouteBuilder(
                       transitionDuration: Duration(milliseconds: 2000),
                       pageBuilder: (context, _, __) {
-                        return HeroPlant(plant: widget.plant, count: _count);
+                        return HeroPlant(
+                            cart: false, plant: widget.plant, count: _count);
                       })),
               child: Stack(
                 fit: StackFit.expand,
@@ -166,33 +162,33 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                               }
                             },
                           )
-                        : ColorFiltered(
-                            colorFilter: _colorFilter,
-                            child: Hero(
-                              tag: 'hero${widget.plant.cover}',
+                        : Hero(
+                            tag: 'hero${widget.plant.cover}',
+                            child: ColorFiltered(
+                              colorFilter: _colorFilter,
                               child: _coverImage,
-                              flightShuttleBuilder:
-                                  (context, animation, direction, _, __) {
-                                if (direction == HeroFlightDirection.push) {
-                                  return SizeTransition(
-                                    sizeFactor: animation,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(75),
-                                      child: ColorFiltered(
-                                          colorFilter: _colorFilter,
-                                          child: _coverImage),
-                                    ),
-                                  );
-                                } else {
-                                  return ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
+                            ),
+                            flightShuttleBuilder:
+                                (context, animation, direction, _, __) {
+                              if (direction == HeroFlightDirection.push) {
+                                return SizeTransition(
+                                  sizeFactor: animation,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(75),
                                     child: ColorFiltered(
                                         colorFilter: _colorFilter,
                                         child: _coverImage),
-                                  );
-                                }
-                              },
-                            ),
+                                  ),
+                                );
+                              } else {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: ColorFiltered(
+                                      colorFilter: _colorFilter,
+                                      child: _coverImage),
+                                );
+                              }
+                            },
                           ),
                   ),
                   FadeTransition(
@@ -209,10 +205,43 @@ class _PlantTileState extends State<PlantTile> with TickerProviderStateMixin {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(widget.plant.name),
+                      Text(
+                        widget.plant.name,
+                        style: TextStyle(
+                          fontFamily: 'MazzardBold',
+                          fontSize: 16,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(-1, 1),
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
                       _inStock
-                          ? Text('\$' + widget.plant.pricing.toString())
-                          : Text('Unavailable'),
+                          ? Text(
+                              '\$${widget.plant.pricing.toString()}',
+                              style: TextStyle(
+                                letterSpacing: 1,
+                                fontFamily: 'MazzardBold',
+                                fontSize: 30,
+                                color: Colors.blue.shade300,
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(-2, 2),
+                                    color: Colors.blue.shade600,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Text(
+                              'Unavailable',
+                              style: TextStyle(
+                                fontFamily: 'MazzardBold',
+                                fontSize: 16,
+                                color: Colors.red,
+                              ),
+                            ),
                       SizedBox(
                         height: 10,
                       )
