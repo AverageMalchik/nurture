@@ -20,4 +20,5 @@ Shopping Application for Plants.
   - Clicking in the 'Favorites' page will also direct you to the plant's main page. To remove from favorites, long press on the tile and drag it to the 'blue bin icon'
   - The 'Cart' page can also direct user to the plant's main page. To delete an item from cart, swipe right on the image and then press the 'red cross icon'
   - To place your order, long press on the 'outlined place order icon' and then leave when the 'green progress indicator appears'. *An anonymous user will be prompted to sign in       here.
-  - After placing the order your plants will appear in the 'My Plants' section. If they are already watered, the circle will be filled with only 'light blue'. If you need to water     them you will be prompted to do so with the appearance of a 'red exclamation' and a hollow circle. If they plants are left unwatered for a long period of time, they will die       and the tile will turn grey. 
+  - After placing the order your plants will appear in the 'My Plants' section. If they are already watered, the circle will be filled with only 'light blue'. If you need to water     them you will be prompted to do so with the appearance of a 'red exclamation' and a hollow circle. If they plants are left unwatered for a long period of time, they will die       and the tile will turn grey.
+  - Long press to water your plants.
